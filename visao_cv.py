@@ -4,7 +4,8 @@
         e nao ter que ficar memorisando funcao da biblioteca
 
 '''
-
+from os import system
+system("cls")
 
 import cv2
 
@@ -18,12 +19,19 @@ def read_img(path):
 def show_img(img):
     cv2.imshow('image', img)
 
+def print_img_params(img):
+    print ("width: {} pixels".format(img.shape[1]))
+    print ("height: {} pixels".format(img.shape[0]))
+    print ("channels: {}".format(img.shape[2]))
 
 
 def read_and_show_img(path):
+    print("img: ", path)
     img = read_img(path)
     show_img(img)
+    print_img_params(img)
     cv2.waitKey(0)
+    print()
 
 def mostra_imagens_base():
     #   mostra todas a imagens contidas na pasta
