@@ -16,7 +16,7 @@ def read_img(path):
 
 #   Mostra img na tela
 def show_img(img):
-    cv2.imshow('image', read_img(path))
+    cv2.imshow('image', img)
 
 
 
