@@ -11,8 +11,10 @@ import cv2
 import numpy as np
 
 N_IMAGENS = 11
-IMG_1_INDEX = 0
-IMG_2_INDEX = 3
+IMG_1_INDEX = 9
+IMG_2_INDEX = 10
+RESIZE = 30
+
 
 #   Le uma imagem
 def read_img(path):
@@ -44,7 +46,7 @@ def print_img_params(img):
     print(img.shape)
     print ("width: {} pixels".format(img.shape[1]))
     print ("height: {} pixels".format(img.shape[0]))
-    print ("channels: {}".format(img.shape[2])) #   bites por pixel
+    if len(img.shape) >= 3: print ("channels: {}".format(img.shape[2])) #   bites por pixel
 
 
 def read_and_show_img(path):
@@ -66,6 +68,7 @@ def mostra_imagens_base():
     for i in range(1,7):
         read_and_show_img("base%s.jpg" % i)
 
+#   Media de pixels da imagem -  para imagens BGR 
 def media(vet):
     total = 0
     for i in vet:
@@ -73,7 +76,8 @@ def media(vet):
     return int(total/len(vet))
 
 def percorre_pixels(img):
-    print(img.shape)
+    # print(img.shape)
+    print_img_params(img)
     # height, width, channels = img.shape # comment if use in grayscale
     height, width = img.shape
     for py in range(0, height):
@@ -92,6 +96,10 @@ def percorre_pixels(img):
 def compare_img(img1, img2):
     print("comparando")
     h_1, w_1 = img1.shape
+    h_2, w_2 = img2.shape
+    print(h_1, h_2, w_1, w_2)
+
+
     result = np.zeros((h_1, w_1, 3), np.uint8)
 
 
@@ -105,22 +113,24 @@ def compare_img(img1, img2):
                 else: 
                     result[py][px][2] = 255
             except:
+                # print(py, px)
                 result[py][px][0] = 255
                 pass
-    show_img(result)
-    # show_resized_img(result, 30)
+    # show_img(result)
+    show_resized_img(result, RESIZE)
     
-def compare_pixel(im1, im2, x, y):
-    pixel = im1[y][x]
+def compare_pixel(img1, img2, y, x):
+    pixel = img1[y][x]
+    
+    h_1, w_1 = img1.shape
+    
     for i in range(y-1, y+2):
-        if i > im2.shape[0]: continue
-        for j in range(x-1, x+2):
-            if j > im2.shape[1]: continue
+        if i > img2.shape[0]: continue
+        for j in range(x, x+2):
+            if i >= h_1: continue
+            if j >= w_1: continue
             if i < 0 or j < 0: continue
-
-
-
-            if im2[i][j] == pixel: return True
+            if img2[i][j] == pixel: return True
     return False
 
 
