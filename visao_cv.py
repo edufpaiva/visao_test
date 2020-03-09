@@ -10,6 +10,10 @@ system("cls")
 import cv2
 import numpy as np
 
+N_IMAGENS = 11
+IMG_1_INDEX = 0
+IMG_2_INDEX = 3
+
 #   Le uma imagem
 def read_img(path):
     #AlunosPUC_Oracle.jpg')#, cv2.IMREAD_GRAYSCALE )
@@ -18,14 +22,26 @@ def read_img(path):
     return img
 
 #   Mostra img na tela
+def show_resized_img(img, percent):
+    dim = img.shape
+    print(img.shape)
+    
+    dim = (int(dim[0] * percent / 100), int(dim[1] * percent / 100))
+    resized = cv2.resize(img, dim, interpolation = cv2.INTER_AREA)
+
+    cv2.imshow('image', resized)
+    cv2.waitKey(0)
+
+#   Mostra img redimensionada na tela
 def show_img(img):
     cv2.imshow('image', img)
     cv2.waitKey(0)
 
+
+
 #   Print em console: widht, height and channels of img
 def print_img_params(img):
-    print(img.shape
-    )
+    print(img.shape)
     print ("width: {} pixels".format(img.shape[1]))
     print ("height: {} pixels".format(img.shape[0]))
     print ("channels: {}".format(img.shape[2])) #   bites por pixel
@@ -40,7 +56,7 @@ def read_and_show_img(path):
 
 def get_img_base():
     imagens = []
-    for i in range(1,7):
+    for i in range(1,N_IMAGENS+1):
         imagens.append(read_img("base%s.jpg" % i))
     return imagens
 
@@ -70,18 +86,56 @@ def percorre_pixels(img):
 
             # for pixel_index in range(len(img[py][px])): #   comment is use iin grayscale
             #     img[py][px][pixel_index] = pixel
+    return img
+    # show_img(img)
 
-    show_img(img)
+def compare_img(img1, img2):
+    print("comparando")
+    h_1, w_1 = img1.shape
+    result = np.zeros((h_1, w_1, 3), np.uint8)
+
+
+    for py in range(h_1):
+        for px in range(w_1):
+            if img1[py][px] == 255 and img2[py][px] == 255: continue
+            try:
+                if compare_pixel(img1, img2, py, px):
+                    result[py][px][1] = 255
+                    pass
+                else: 
+                    result[py][px][2] = 255
+            except:
+                result[py][px][0] = 255
+                pass
+    show_img(result)
+    # show_resized_img(result, 30)
+    
+def compare_pixel(im1, im2, x, y):
+    pixel = im1[y][x]
+    for i in range(y-1, y+2):
+        if i > im2.shape[0]: continue
+        for j in range(x-1, x+2):
+            if j > im2.shape[1]: continue
+            if i < 0 or j < 0: continue
+
+
+
+            if im2[i][j] == pixel: return True
+    return False
 
 
 # mostra_imagens_base()
 
 imagens =  get_img_base()
-percorre_pixels(imagens[0])
 
 
 
+# show_resized_img(imagens[7], 20)
 
+imagens[IMG_1_INDEX] = percorre_pixels(imagens[IMG_1_INDEX])
+imagens[IMG_2_INDEX] = percorre_pixels(imagens[IMG_2_INDEX])
+
+compare_img(imagens[IMG_1_INDEX], imagens[IMG_2_INDEX])
 
 
 
