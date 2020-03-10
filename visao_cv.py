@@ -9,11 +9,12 @@ system("cls")
 
 import cv2
 import numpy as np
+import math
 
 N_IMAGENS = 11
-IMG_1_INDEX = 9
-IMG_2_INDEX = 10
-RESIZE = 30
+IMG_1_INDEX = 0
+IMG_2_INDEX = 5
+RESIZE = 80
 
 
 #   Le uma imagem
@@ -80,6 +81,7 @@ def percorre_pixels(img):
     print_img_params(img)
     # height, width, channels = img.shape # comment if use in grayscale
     height, width = img.shape
+    
     for py in range(0, height):
         for px in range(0,  width):
             # pixel = int(media(img[py][px]) / 50) * 50 #   comment is use iin grayscale
@@ -90,8 +92,18 @@ def percorre_pixels(img):
 
             # for pixel_index in range(len(img[py][px])): #   comment is use iin grayscale
             #     img[py][px][pixel_index] = pixel
+
     return img
     # show_img(img)
+
+def get_empty_img(img):
+    h_1, w_1 = img.shape
+    return np.zeros((h_1, w_1, 3), np.uint8)
+
+def get_empty_img_grayscale(img):
+    h_1, w_1 = img.shape
+    return np.zeros((h_1, w_1, 1), np.uint8)
+
 
 def compare_img(img1, img2):
     print("comparando")
@@ -133,6 +145,55 @@ def compare_pixel(img1, img2, y, x):
             if img2[i][j] == pixel: return True
     return False
 
+def verifica_pixel_mais_alto(img):
+    h, w = img.shape
+    for y in range(h):
+        for x in range(w):
+            if img[y][x] != 255:
+                return {"x":x, "y":y  }
+
+    return {"x":0, "y":0 }
+
+def get_pontos_linha_superior(img, ponto, step=10):
+    h, w = img.shape
+
+    pontos = []
+
+    if ponto["x"] < w/2:
+        for x in range(ponto["x"], w, step):
+            for y in range(int(h/4)):
+                if img[y][x] != 255:
+                    pontos.append({"x": x, "y":y})
+                    break
+    else:
+        for x in range(w, ponto["x"], -1 *step):
+            for y in range(int(h/4)):
+                if img[y][x] != 255:
+                    pontos.append({"x": x, "y":y})
+                    break
+    return pontos
+
+def print_ponto(img, ponto, bgr = [0, 0, 255]):
+    # print(img.shape)
+
+    h_1, w_1, channel = img.shape
+    x = ponto["x"]
+    y = ponto["y"]
+
+    for i in range(y-2, y+4):
+        for j in range(x-2, x+4):
+            img[i][j] = bgr
+    return img
+    
+def get_angulo(p1, p2):
+    if p1["x"]-p2["x"] == 0: return 0
+    return math.degrees(math.atan((p1["y"]-p2["y"])/(p1["x"]-p2["x"])))
+    
+
+
+
+
+
 
 # mostra_imagens_base()
 
@@ -145,7 +206,43 @@ imagens =  get_img_base()
 imagens[IMG_1_INDEX] = percorre_pixels(imagens[IMG_1_INDEX])
 imagens[IMG_2_INDEX] = percorre_pixels(imagens[IMG_2_INDEX])
 
-compare_img(imagens[IMG_1_INDEX], imagens[IMG_2_INDEX])
+# compare_img(imagens[IMG_1_INDEX], imagens[IMG_2_INDEX])
+
+ponto = verifica_pixel_mais_alto(imagens[IMG_1_INDEX])
+result = get_empty_img(imagens[IMG_1_INDEX])
 
 
+pontos = get_pontos_linha_superior(imagens[IMG_1_INDEX], ponto, int(imagens[IMG_1_INDEX].shape[1]/10))
+pontos = get_pontos_linha_superior(imagens[IMG_1_INDEX], ponto, 50)
+media = 0
+for i in pontos:
+    if i == ponto:
+        continue
+    result = print_ponto(result, i)
+    # result = print_ponto(result, i, [255, 0, 0])
+    angulo = get_angulo(ponto, i)
+    if angulo < 1 and angulo > 0:
+        if media == 0:
+            media = angulo
+        else:
+            media = (media + angulo) / 2
+        print(angulo)
+    else:
+        pass
+print("angulo medio", media)
+
+result = print_ponto(result, ponto, [0,255,0])
+
+
+
+print(ponto)
+show_resized_img(result, RESIZE)
+show_resized_img(imagens[IMG_1_INDEX], RESIZE)
+
+
+print()
+# print(verifica_pixel_mais_alto(imagens[IMG_2_INDEX]))
+
+
+print(ponto, pontos[len(pontos)-2])
 
