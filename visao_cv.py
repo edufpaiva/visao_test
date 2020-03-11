@@ -1,5 +1,6 @@
 '''
     - roteiro seguido: https://www.pucsp.br/~jarakaki/pai/Roteiro4.pdf
+    - link rotacao: https://www.pyimagesearch.com/2017/01/02/rotate-images-correctly-with-opencv-and-python/
     - separei em funcoes, pq acho que assim da pra entender melhor oq cada coisa faz
         e nao ter que ficar memorisando funcao da biblioteca
 
