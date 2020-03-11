@@ -11,9 +11,11 @@ import cv2
 import numpy as np
 import math
 
-N_IMAGENS = 11
-IMG_1_INDEX = 0
-IMG_2_INDEX = 4
+N_IMAGENS_BASE = 1
+N_IMAGENS_DEF = 4
+INDEX_BASE = 0
+INDEX_DEF = 3
+RESIZE = 35
 RESIZE = 80
 
 
@@ -21,7 +23,6 @@ class Ponto:
     def __init__(self, x, y):
         self.x = x
         self.y = y
-
 
 def merge_sort(vet):
     if len(vet) == 1:
@@ -75,15 +76,12 @@ def show_img(img):
     cv2.imshow('image', img)
     cv2.waitKey(0)
 
-
-
 #   Print em console: widht, height and channels of img
 def print_img_params(img):
     print(img.shape)
     print ("width: {} pixels".format(img.shape[1]))
     print ("height: {} pixels".format(img.shape[0]))
     if len(img.shape) >= 3: print ("channels: {}".format(img.shape[2])) #   bites por pixel
-
 
 def read_and_show_img(path):
     print("img: ", path)
@@ -94,15 +92,16 @@ def read_and_show_img(path):
 
 def get_img_base():
     imagens = []
-    for i in range(1,N_IMAGENS+1):
-        imagens.append(read_img("base%s.jpg" % i))
+    for i in range(1,N_IMAGENS_BASE+1):
+        imagens.append(read_img("./bases/02 - parte/base (%s).jpg" % i))
     return imagens
 
-def mostra_imagens_base():
-    #   mostra todas a imagens contidas na pasta
-    #   que se chamam base e sao numeradas de 1 a 6 ;D hehe
-    for i in range(1,7):
-        read_and_show_img("base%s.jpg" % i)
+def get_img_def():
+    imagens = []
+    for i in range(1,N_IMAGENS_DEF + 1):
+        imagens.append(read_img("./defeitos/02 - parte/def (%s).jpg" % i))
+    return imagens
+
 
 #   Media de pixels da imagem -  para imagens BGR 
 def media(vet):
@@ -138,7 +137,6 @@ def get_empty_img(img):
 def get_empty_img_grayscale(img):
     h_1, w_1 = img.shape
     return np.zeros((h_1, w_1, 1), np.uint8)
-
 
 def compare_img(img1, img2):
     print("comparando")
@@ -203,9 +201,14 @@ def get_pontos_linha_superior(img, ponto, step=10):
     else:
         for x in range(w, ponto["x"], -1 *step):
             for y in range(int(h/4)):
-                if img[y][x] != 255:
-                    pontos.append({"x": x, "y":y})
-                    break
+                try:
+                    pass
+                    if img[y][x] != 255:
+                        pontos.append({"x": x, "y":y})
+                        break
+                except :
+
+                    pass
     return pontos
 
 def print_ponto(img, ponto, bgr = [0, 0, 255]):
@@ -224,29 +227,54 @@ def get_angulo(p1, p2):
     if p1["x"]-p2["x"] == 0: return 0
     return math.degrees(math.atan((p1["y"]-p2["y"])/(p1["x"]-p2["x"])))
     
+def rotate_bound(image, angle):
+    # grab the dimensions of the image and then determine the
+    # center
+    (h, w) = image.shape[:2]
+    (cX, cY) = (w // 2, h // 2)
+    # grab the rotation matrix (applying the negative of the
+    # angle to rotate clockwise), then grab the sine and cosine
+    # (i.e., the rotation components of the matrix)
+    M = cv2.getRotationMatrix2D((cX, cY), -angle, 1.0)
+    cos = np.abs(M[0, 0])
+    sin = np.abs(M[0, 1])
+    # compute the new bounding dimensions of the image
+    nW = int((h * sin) + (w * cos))
+    nH = int((h * cos) + (w * sin))
+    # adjust the rotation matrix to take into account translation
+    M[0, 2] += (nW / 2) - cX
+    M[1, 2] += (nH / 2) - cY
+    # perform the actual rotation and return the image
+    return cv2.warpAffine(image, M, (nW, nH))
+
+# read_and_show_img("./defeitos/02 - parte/def (2).jpg")
 
 
 # mostra_imagens_base()
 
-imagens =  get_img_base()
-
+bases =  get_img_base()
+defeitos = get_img_def()
 
 
 # show_resized_img(imagens[7], 20)
 
-imagens[IMG_1_INDEX] = percorre_pixels(imagens[IMG_1_INDEX])
-imagens[IMG_2_INDEX] = percorre_pixels(imagens[IMG_2_INDEX])
+bases[INDEX_BASE] = percorre_pixels(bases[INDEX_BASE])
+defeitos[INDEX_DEF] = percorre_pixels(defeitos[INDEX_DEF])
 
-compare_img(imagens[IMG_1_INDEX], imagens[IMG_2_INDEX])
+img1 = bases[INDEX_BASE]
+img2 = defeitos[INDEX_DEF]
 
-img = imagens[IMG_2_INDEX]
+# show_resized_img(img1, RESIZE)
+# show_resized_img(img2, RESIZE)
 
-ponto = verifica_pixel_mais_alto(img)
-result = get_empty_img(img)
+compare_img(img1, img2)
+
+ponto = verifica_pixel_mais_alto(img2)
+result = get_empty_img(img2)
 
 
-pontos = get_pontos_linha_superior(img, ponto, int(img.shape[1]/10))
-pontos = get_pontos_linha_superior(img, ponto, 50)
+pontos = get_pontos_linha_superior(img2, ponto, int(img2.shape[1]/10))
+pontos = get_pontos_linha_superior(img2, ponto, 50)
 media = 0
 for i in pontos:
     if i == ponto:
@@ -266,11 +294,14 @@ print("angulo medio", media)
 
 result = print_ponto(result, ponto, [0,255,0])
 
+show_resized_img(rotate_bound(img2, -media), RESIZE)
+img2 = rotate_bound(img2, -media)
 
+compare_img(img1, img2)
 
 print(ponto)
 show_resized_img(result, RESIZE)
-show_resized_img(imagens[IMG_1_INDEX], RESIZE)
+show_resized_img(bases[INDEX_BASE], RESIZE)
 
 
 print()
