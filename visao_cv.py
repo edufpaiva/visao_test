@@ -13,9 +13,44 @@ import math
 
 N_IMAGENS = 11
 IMG_1_INDEX = 0
-IMG_2_INDEX = 5
+IMG_2_INDEX = 4
 RESIZE = 80
 
+
+class Ponto:
+    def __init__(self, x, y):
+        self.x = x
+        self.y = y
+
+
+def merge_sort(vet):
+    if len(vet) == 1:
+        return vet
+    mid = int(len(vet)/2)
+    return merge(merge_sort(vet[:mid]), merge_sort(vet[mid:]))
+
+
+    print(vet[:mid])
+    print(vet[mid:])
+
+def merge(vet_1, vet_2):
+    i = j = 0
+    ret = []
+    while i < len(vet_1) and j < len(vet_2):
+        pass
+        if vet_1[i] < vet_2[j]:
+            ret.append(vet_1[i])
+            i += 1
+        else:
+            ret.append(vet_2[j])
+            j += 1
+
+    for k in range(i, len(vet_1)):
+        ret.append(vet_1[k])
+    for k in range(j, len(vet_2)):
+        ret.append(vet_2[k])
+    
+    return ret
 
 #   Le uma imagem
 def read_img(path):
@@ -117,8 +152,8 @@ def compare_img(img1, img2):
 
     for py in range(h_1):
         for px in range(w_1):
-            if img1[py][px] == 255 and img2[py][px] == 255: continue
             try:
+                if img1[py][px] == 255 and img2[py][px] == 255: continue
                 if compare_pixel(img1, img2, py, px):
                     result[py][px][1] = 255
                     pass
@@ -191,10 +226,6 @@ def get_angulo(p1, p2):
     
 
 
-
-
-
-
 # mostra_imagens_base()
 
 imagens =  get_img_base()
@@ -206,20 +237,22 @@ imagens =  get_img_base()
 imagens[IMG_1_INDEX] = percorre_pixels(imagens[IMG_1_INDEX])
 imagens[IMG_2_INDEX] = percorre_pixels(imagens[IMG_2_INDEX])
 
-# compare_img(imagens[IMG_1_INDEX], imagens[IMG_2_INDEX])
+compare_img(imagens[IMG_1_INDEX], imagens[IMG_2_INDEX])
 
-ponto = verifica_pixel_mais_alto(imagens[IMG_1_INDEX])
-result = get_empty_img(imagens[IMG_1_INDEX])
+img = imagens[IMG_2_INDEX]
+
+ponto = verifica_pixel_mais_alto(img)
+result = get_empty_img(img)
 
 
-pontos = get_pontos_linha_superior(imagens[IMG_1_INDEX], ponto, int(imagens[IMG_1_INDEX].shape[1]/10))
-pontos = get_pontos_linha_superior(imagens[IMG_1_INDEX], ponto, 50)
+pontos = get_pontos_linha_superior(img, ponto, int(img.shape[1]/10))
+pontos = get_pontos_linha_superior(img, ponto, 50)
 media = 0
 for i in pontos:
     if i == ponto:
         continue
     result = print_ponto(result, i)
-    # result = print_ponto(result, i, [255, 0, 0])
+    result = print_ponto(result, {"x": i["x"], "y":ponto["y"]}, [255, 0, 0])
     angulo = get_angulo(ponto, i)
     if angulo < 1 and angulo > 0:
         if media == 0:
@@ -245,4 +278,7 @@ print()
 
 
 print(ponto, pontos[len(pontos)-2])
+
+
+
 
