@@ -1,6 +1,7 @@
 '''
     - roteiro seguido: https://www.pucsp.br/~jarakaki/pai/Roteiro4.pdf
     - link rotacao: https://www.pyimagesearch.com/2017/01/02/rotate-images-correctly-with-opencv-and-python/
+    - python -m pip install --user numpy scipy matplotlib ipython jupyter pandas sympy nose
     - separei em funcoes, pq acho que assim da pra entender melhor oq cada coisa faz
         e nao ter que ficar memorisando funcao da biblioteca
 
@@ -12,6 +13,8 @@ import cv2
 import numpy as np
 import math
 
+PATH_BASE = "./bases/02 - parte/"
+PATH_DEF = "./defeitos/02 - parte/"
 N_IMAGENS_BASE = 1
 N_IMAGENS_DEF = 4
 INDEX_BASE = 0
@@ -91,16 +94,16 @@ def read_and_show_img(path):
     print_img_params(img)
     print()
 
-def get_img_base():
+def get_img_base(path = "./"):
     imagens = []
     for i in range(1,N_IMAGENS_BASE+1):
-        imagens.append(read_img("./bases/02 - parte/base (%s).jpg" % i))
+        imagens.append(read_img( path +"base (%s).jpg" % i))
     return imagens
 
-def get_img_def():
+def get_img_def(path = "./"):
     imagens = []
     for i in range(1,N_IMAGENS_DEF + 1):
-        imagens.append(read_img("./defeitos/02 - parte/def (%s).jpg" % i))
+        imagens.append(read_img(path +"def (%s).jpg" % i))
     return imagens
 
 
@@ -253,7 +256,7 @@ def rotate_bound(image, angle):
 
 # mostra_imagens_base()
 
-bases =  get_img_base()
+bases =  get_img_base(PATH_BASE)
 defeitos = get_img_def()
 
 
