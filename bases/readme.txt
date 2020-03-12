@@ -1,0 +1,1 @@
+os arquivos de imagem para base devem se chamar "base (N).jpg"

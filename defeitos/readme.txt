@@ -1,0 +1,1 @@
+os arquivos de imagem para defeitos devem se chamar "def (N).jpg"
