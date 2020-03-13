@@ -187,7 +187,7 @@ def compare_pixel(img1, img2, y, x):
             if img2[i][j] == pixel: return True
     return False
 
-def verifica_pixel_mais_alto(img):
+def get_ponto_superior(img):
     h, w = img.shape
     for y in range(h):
         for x in range(w):
@@ -257,7 +257,8 @@ def rotate_bound(image, angle):
     return cv2.warpAffine(image, M, (nW, nH))
 
 def format_img(img):
-    ponto_mais_alto = verifica_pixel_mais_alto(img)
+    ponto_mais_alto = get_ponto_superior(img)
+    ponto_mais_a_esqueda = get_ponto_esquerda(img)    
     pontos_superiores = get_pontos_linha_superior(img, ponto_mais_alto, 50)
     angulos = []
     # print("ponto mais alto", ponto_mais_alto.to_string())
@@ -270,10 +271,11 @@ def format_img(img):
     img = rotate_bound(img, -moda)
     img = retira_bordas(img)
 
-    ponto_mais_alto_rotate = verifica_pixel_mais_alto(img)
+    ponto_mais_alto_rotate = get_ponto_superior(img)
+    ponto_mais_a_esqueda_rotate = get_ponto_esquerda(img)    
     
     
-    img = ajusta_img(img, ponto_mais_alto_rotate.x - ponto_mais_alto.x, ponto_mais_alto_rotate.y - ponto_mais_alto.y)
+    img = ajusta_img(img, ponto_mais_a_esqueda_rotate.x - ponto_mais_a_esqueda.x, ponto_mais_alto_rotate.y - ponto_mais_alto.y)
     img = retira_bordas(img)
     show_img(img)
     
@@ -326,7 +328,18 @@ def get_moda(vet):
         return vet[int(vet_len/2)]
 
 def get_media(vet):
-    pass
+    total = 0
+    for i in vet: total += i
+    return total / len(vet)
+
+def get_ponto_esquerda(img):
+    h, w = img.shape[:2]
+
+    for x in range(w):
+        for y in range(h):
+            if img[y][x] != 255:
+                return Ponto(x,y)
+    return Ponto(0,0)
 
 bases =  get_img_base(PATH_BASE)
 defeitos = get_img_def(PATH_DEF)
