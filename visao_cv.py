@@ -18,11 +18,11 @@ import math
 PATH_BASE = "./bases/02 - parte/"
 PATH_DEF = "./defeitos/02 - parte/"
 N_IMAGENS_BASE = 1
-N_IMAGENS_DEF = 4
+N_IMAGENS_DEF = 3
 INDEX_BASE = 0
-INDEX_DEF = 3
+INDEX_DEF = 1
 RESIZE = 30
-RESIZE = 100
+# RESIZE = 100
 
 
 class Ponto:
@@ -37,10 +37,6 @@ def merge_sort(vet):
         return vet
     mid = int(len(vet)/2)
     return merge(merge_sort(vet[:mid]), merge_sort(vet[mid:]))
-
-
-    print(vet[:mid])
-    print(vet[mid:])
 
 def merge(vet_1, vet_2):
     i = j = 0
@@ -231,7 +227,23 @@ def print_ponto(img, ponto, bgr = [0, 0, 255]):
         for j in range(x-2, x+4):
             img[i][j] = bgr
     return img
-    
+
+def mostra_ponto(img, ponto):
+
+    result = get_empty_img(img)
+    h, w = img.shape[:2]
+    for y in range(h):
+        for x in range(w):
+            result[y][x] = [img[y][x], img[y][x], img[y][x]]
+
+    for y in range(ponto.y-2, ponto.y + 3):
+        for x in range(ponto.x-2, ponto.x + 3):
+            result[y][x] = [0, 0, 255]
+    show_resized_img(result, RESIZE)
+
+
+
+
 def get_angulo(p1, p2):
     if p1.x-p2.x == 0: return 0
     return math.degrees(math.atan((p1.y-p2.y)/(p1.x-p2.x)))
@@ -316,11 +328,17 @@ def get_media(vet):
 
 def get_ponto_esquerda(img):
     h, w = img.shape[:2]
-    for x in range(w):
-        for y in range(h):
+    pontos = []
+    for y in range(int(h/4)):
+        for x in range(int(w/4)):
             if img[y][x] != 255:
-                return Ponto(x,y)
-    return Ponto(0,0)
+                pontos.append(x)
+                break
+    pontos = merge_sort(pontos)
+    print("PONTOS")
+    print(pontos)
+    moda = int(get_moda(pontos))
+    return Ponto(moda, 0)
 
 def alinha_imagem_com_a_outra(img1, img2):
 
@@ -335,6 +353,8 @@ def alinha_imagem_com_a_outra(img1, img2):
     off_y = y2 - y1
     off_x = x2 - x1
 
+    print(off_x)
+
     result = get_empty_img_grayscale(img2)
 
     result[:h][:w] = 255
@@ -342,7 +362,12 @@ def alinha_imagem_com_a_outra(img1, img2):
     for y in range(h):
         for x in range(w):
             if img2[y][x] != 255: 
-                result[y-off_y][x-off_x] = img2[y][x]
+                try:
+                    pass
+                    result[y-off_y][x-off_x] = img2[y][x]
+                except:
+                    print(y-off_y, y, x-off_x, x)
+                    pass
             
                 
 
@@ -376,6 +401,8 @@ show_img(img2)
 img1 = format_img(img1)
 img2 = format_img(img2)
 show_img(img2)
+ponto = get_ponto_esquerda(img2)
+mostra_ponto(img2, ponto)
 
 # show_img(compare_img(img2, alinha_imagem_com_a_outra(img1, img2)))
 
@@ -394,7 +421,7 @@ show_img(result)
 show_img(img1)
 show_img(img2)
 
-# show_resized_img(result, RESIZE)
+show_resized_img(result, RESIZE)
 
 
 
