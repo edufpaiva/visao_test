@@ -20,9 +20,9 @@ PATH_DEF = "./defeitos/02 - parte/"
 N_IMAGENS_BASE = 1
 N_IMAGENS_DEF = 4
 INDEX_BASE = 0
-INDEX_DEF = 2
-RESIZE = 70
-# RESIZE = 100
+INDEX_DEF = 3
+RESIZE = 30
+RESIZE = 100
 
 
 class Ponto:
@@ -139,11 +139,11 @@ def percorre_pixels(img):
     # show_img(img)
 
 def get_empty_img(img):
-    h_1, w_1 = img.shape
+    h_1, w_1 = img.shape[:2]
     return np.zeros((h_1, w_1, 3), np.uint8)
 
 def get_empty_img_grayscale(img):
-    h_1, w_1 = img.shape
+    h_1, w_1 = img.shape[:2]
     return np.zeros((h_1, w_1, 1), np.uint8)
 
 def compare_img(img1, img2):
@@ -155,6 +155,7 @@ def compare_img(img1, img2):
     result = np.zeros((h_1, w_1, 3), np.uint8)
 
     for py in range(h_1):
+        # if py % 100 == 0: show_img(result)
         for px in range(w_1):
             try:
                 if img1[py][px] == 255 and img2[py][px] == 255: continue
@@ -173,7 +174,8 @@ def compare_img(img1, img2):
     
 def compare_pixel(img1, img2, y, x):
     pixel = img1[y][x]
-    
+    if pixel == 255: return False
+
     h_1, w_1 = img1.shape
     
     for i in range(y+1, y+2):
@@ -182,11 +184,11 @@ def compare_pixel(img1, img2, y, x):
             if i >= h_1: continue
             if j >= w_1: continue
             if i < 0 or j < 0: continue
-            if img2[i][j] == pixel: return True
+            if img2[i][j] != 255: return True
     return False
 
 def get_ponto_superior(img):
-    h, w = img.shape
+    h, w = img.shape[:2]
     for y in range(h):
         for x in range(w):
             if img[y][x] != 255:
@@ -270,20 +272,12 @@ def format_img(img):
     moda = get_moda(angulos)
     print("moda:", moda)
     img = rotate_bound(img, -moda)
-    img = retira_bordas(img)
+    show_img(img)
 
-    ponto_mais_alto_rotate = get_ponto_superior(img)
-    ponto_mais_a_esqueda_rotate = get_ponto_esquerda(img)    
+    img = retira_bordas(img)  
     
     return img
 
-def ajusta_img(img, off_x = 0, off_y = 0):
-    result = get_empty_img_grayscale(img)
-    h, w = img.shape[:2]
-    for y in range(off_y, h-off_y):
-        for x in range(off_x, w-off_x):
-            result[y-off_y][x-off_x] = img[y][x]
-    return result
 
 def retira_bordas(img):
     h, w = img.shape[:2]
@@ -329,18 +323,39 @@ def get_ponto_esquerda(img):
     return Ponto(0,0)
 
 def alinha_imagem_com_a_outra(img1, img2):
-    ponto_superior_1 = get_ponto_superior(img1).y
-    ponto_superior_2 = get_ponto_superior(img2).y
 
-    ponto_esquerda_1 = get_ponto_esquerda(img1).x
-    ponto_esquerda_2 = get_ponto_esquerda(img2).x
+    h, w = img2.shape[:2]
 
-    print(ponto_esquerda_1, ponto_esquerda_2)
-    print(ponto_superior_1, ponto_superior_2)
+    x1 = get_ponto_esquerda(img1).x
+    x2 = get_ponto_esquerda(img2).x
 
-    img = ajusta_img(img2, ponto_esquerda_1 - ponto_esquerda_2, ponto_superior_1 - ponto_superior_2)
-    img = retira_bordas(img)
-    return img
+    y1 = get_ponto_superior(img1).y
+    y2 = get_ponto_superior(img2).y
+
+    off_y = y2 - y1
+    off_x = x2 - x1
+
+    result = get_empty_img_grayscale(img2)
+
+    result[:h][:w] = 255
+
+    for y in range(h):
+        for x in range(w):
+            if img2[y][x] != 255: 
+                result[y-off_y][x-off_x] = img2[y][x]
+            
+                
+
+    result = retira_bordas(result)
+    return result
+
+
+
+
+    return result
+
+
+
 
 
 bases =  get_img_base(PATH_BASE)
@@ -349,19 +364,46 @@ defeitos = get_img_def(PATH_DEF)
 
 img1 = percorre_pixels(bases[INDEX_BASE])
 img2 = percorre_pixels(defeitos[INDEX_DEF])
+
+show_img(defeitos[INDEX_DEF])
+show_img(img2)
+
 # show_img(img1)
 # show_img(img2)
 
-result = compare_img(img1, img2)
+# result = compare_img(img1, img2)
 # show_img(result)
 img1 = format_img(img1)
 img2 = format_img(img2)
+show_img(img2)
+
+# show_img(compare_img(img2, alinha_imagem_com_a_outra(img1, img2)))
+
+# show_img(img2)
+
 img2 = alinha_imagem_com_a_outra(img1, img2)
+img2 = alinha_imagem_com_a_outra(img1, img2)
+show_img(img2)
+
+# show_img(img1)
 # show_img(img2)
 
 # result = compare_img(img1, img2)
-result = compare_img(img1, img1)
+result = compare_img(img1, img2)
 show_img(result)
-show_resized_img(result, RESIZE)
+show_img(img1)
+show_img(img2)
+
+# show_resized_img(result, RESIZE)
+
+
+
+
+
+
+
+
+
+
 
 
