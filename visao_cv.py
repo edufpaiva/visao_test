@@ -15,14 +15,14 @@ import cv2
 import numpy as np
 import math
 
-PATH_BASE = "./bases/"
-PATH_DEF = "./defeitos/"
+PATH_BASE = "./bases/02 - parte/"
+PATH_DEF = "./defeitos/02 - parte/"
 N_IMAGENS_BASE = 1
-N_IMAGENS_DEF = 3
+N_IMAGENS_DEF = 4
 INDEX_BASE = 0
 INDEX_DEF = 2
-RESIZE = 35
-RESIZE = 100
+RESIZE = 70
+# RESIZE = 100
 
 
 class Ponto:
@@ -152,9 +152,7 @@ def compare_img(img1, img2):
     h_2, w_2 = img2.shape[:2]
     print(h_1, h_2, w_1, w_2)
 
-
     result = np.zeros((h_1, w_1, 3), np.uint8)
-
 
     for py in range(h_1):
         for px in range(w_1):
@@ -257,12 +255,15 @@ def rotate_bound(image, angle):
     return cv2.warpAffine(image, M, (nW, nH))
 
 def format_img(img):
+    
     ponto_mais_alto = get_ponto_superior(img)
     ponto_mais_a_esqueda = get_ponto_esquerda(img)    
-    pontos_superiores = get_pontos_linha_superior(img, ponto_mais_alto, 50)
+    pontos_superiores = get_pontos_linha_superior(img, ponto_mais_alto, 1)
     angulos = []
+    
     # print("ponto mais alto", ponto_mais_alto.to_string())
     # print(pontos_superiores)
+    
     for ponto in pontos_superiores:
         angulos.append(get_angulo(ponto_mais_alto, ponto))
     # print(angulos)
@@ -274,19 +275,11 @@ def format_img(img):
     ponto_mais_alto_rotate = get_ponto_superior(img)
     ponto_mais_a_esqueda_rotate = get_ponto_esquerda(img)    
     
-    
-    img = ajusta_img(img, ponto_mais_a_esqueda_rotate.x - ponto_mais_a_esqueda.x, ponto_mais_alto_rotate.y - ponto_mais_alto.y)
-    img = retira_bordas(img)
-    show_img(img)
-    
-    print(ponto_mais_alto.to_string(), ponto_mais_alto_rotate.to_string())
-    
     return img
 
 def ajusta_img(img, off_x = 0, off_y = 0):
     result = get_empty_img_grayscale(img)
     h, w = img.shape[:2]
-
     for y in range(off_y, h-off_y):
         for x in range(off_x, w-off_x):
             result[y-off_y][x-off_x] = img[y][x]
@@ -294,28 +287,23 @@ def ajusta_img(img, off_x = 0, off_y = 0):
 
 def retira_bordas(img):
     h, w = img.shape[:2]
-
     print(w,h)
     for y in range(h-1, 0, -1):
         for x in range(w-1, 0, -1):
             if img[y][x] == 255: break
             img[y][x] = 255
-
     for y in range(h):
         for x in range(w):
             if img[y][x] == 255: break
             img[y][x] = 255
-
     for x in range(w-1, 0, -1):
         for y in range(h-1, 0, -1):
             if img[y][x] == 255: break
             img[y][x] = 255
-    
     for x in range(w):
         for y in range(h):
             if img[y][x] == 255: break
             img[y][x] = 255
-
     
     return img
 
@@ -334,12 +322,26 @@ def get_media(vet):
 
 def get_ponto_esquerda(img):
     h, w = img.shape[:2]
-
     for x in range(w):
         for y in range(h):
             if img[y][x] != 255:
                 return Ponto(x,y)
     return Ponto(0,0)
+
+def alinha_imagem_com_a_outra(img1, img2):
+    ponto_superior_1 = get_ponto_superior(img1).y
+    ponto_superior_2 = get_ponto_superior(img2).y
+
+    ponto_esquerda_1 = get_ponto_esquerda(img1).x
+    ponto_esquerda_2 = get_ponto_esquerda(img2).x
+
+    print(ponto_esquerda_1, ponto_esquerda_2)
+    print(ponto_superior_1, ponto_superior_2)
+
+    img = ajusta_img(img2, ponto_esquerda_1 - ponto_esquerda_2, ponto_superior_1 - ponto_superior_2)
+    img = retira_bordas(img)
+    return img
+
 
 bases =  get_img_base(PATH_BASE)
 defeitos = get_img_def(PATH_DEF)
@@ -347,12 +349,19 @@ defeitos = get_img_def(PATH_DEF)
 
 img1 = percorre_pixels(bases[INDEX_BASE])
 img2 = percorre_pixels(defeitos[INDEX_DEF])
-
-result = compare_img(img1, img2)
-# show_img(result)
-
-img2 = format_img(img2)
+# show_img(img1)
 # show_img(img2)
 
 result = compare_img(img1, img2)
+# show_img(result)
+img1 = format_img(img1)
+img2 = format_img(img2)
+img2 = alinha_imagem_com_a_outra(img1, img2)
+# show_img(img2)
+
+# result = compare_img(img1, img2)
+result = compare_img(img1, img1)
 show_img(result)
+show_resized_img(result, RESIZE)
+
+
