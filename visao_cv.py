@@ -18,9 +18,9 @@ import math
 PATH_BASE = "./bases/"
 PATH_DEF = "./defeitos/"
 N_IMAGENS_BASE = 1
-N_IMAGENS_DEF = 2
+N_IMAGENS_DEF = 3
 INDEX_BASE = 0
-INDEX_DEF = 1
+INDEX_DEF = 2
 RESIZE = 35
 RESIZE = 100
 
@@ -178,9 +178,9 @@ def compare_pixel(img1, img2, y, x):
     
     h_1, w_1 = img1.shape
     
-    for i in range(y-1, y+2):
+    for i in range(y+1, y+2):
         if i > img2.shape[0]: continue
-        for j in range(x, x+2):
+        for j in range(x+1, x+2):
             if i >= h_1: continue
             if j >= w_1: continue
             if i < 0 or j < 0: continue
@@ -348,11 +348,6 @@ defeitos = get_img_def(PATH_DEF)
 img1 = percorre_pixels(bases[INDEX_BASE])
 img2 = percorre_pixels(defeitos[INDEX_DEF])
 
-# img2 = format_img(img2)
-
-
-
-
 result = compare_img(img1, img2)
 # show_img(result)
 
@@ -361,49 +356,3 @@ img2 = format_img(img2)
 
 result = compare_img(img1, img2)
 show_img(result)
-
-
-# ponto = verifica_pixel_mais_alto(img2)
-# result = get_empty_img(img2)
-
-
-# pontos = get_pontos_linha_superior(img2, ponto, int(img2.shape[1]/10))
-# pontos = get_pontos_linha_superior(img2, ponto, 50)
-# media = 0
-# for i in pontos:
-#     if i == ponto:
-#         continue
-#     result = print_ponto(result, i)
-#     result = print_ponto(result, {"x": i["x"], "y":ponto["y"]}, [255, 0, 0])
-#     angulo = get_angulo(ponto, i)
-#     if angulo < 1 and angulo > 0:
-#         if media == 0:
-#             media = angulo
-#         else:
-#             media = (media + angulo) / 2
-#         print(angulo)
-#     else:
-#         pass
-# print("angulo medio", media)
-
-# result = print_ponto(result, ponto, [0,255,0])
-
-# show_resized_img(rotate_bound(img2, -media), RESIZE)
-# img2 = rotate_bound(img2, -media)
-
-# compare_img(img1, img2)
-
-# print(ponto)
-# show_resized_img(result, RESIZE)
-# show_resized_img(bases[INDEX_BASE], RESIZE)
-
-
-# print()
-# # print(verifica_pixel_mais_alto(imagens[IMG_2_INDEX]))
-
-
-# print(ponto, pontos[len(pontos)-2])
-
-
-
-
