@@ -15,8 +15,8 @@ import cv2
 import numpy as np
 import math
 
-PATH_BASE = "./bases/02 - parte/"
-PATH_DEF = "./defeitos/02 - parte/"
+PATH_BASE = "./bases/01 - completo/"
+PATH_DEF = "./defeitos/01 - completo/"
 N_IMAGENS_BASE = 1
 N_IMAGENS_DEF = 3
 INDEX_BASE = 0
@@ -65,19 +65,27 @@ def read_img(path):
     return img
 
 #   Mostra img na tela
-def show_resized_img(img, percent):
+def show_resized_img(img, percent, name='image'):
     dim = img.shape
     print(img.shape)
     
     dim = (int(dim[0] * percent / 100), int(dim[1] * percent / 100))
     resized = cv2.resize(img, dim, interpolation = cv2.INTER_AREA)
 
-    cv2.imshow('image', resized)
+    name='image'    #   Comment if u wanto to rename windows
+
+    cv2.imshow(name, resized)
+    print("============================\n\tpress enter\n============================\n")
     cv2.waitKey(0)
 
 #   Mostra img redimensionada na tela
-def show_img(img):
-    cv2.imshow('image', img)
+def show_img(img, name='image'):
+    result = img
+    
+    name='image'    #   Comment if u wanto to rename windows
+
+    cv2.imshow(name, cv2.resize(result, (1024, 640), interpolation= cv2.INTER_AREA))
+    print("============================\n\tpress enter\n============================\n")
     cv2.waitKey(0)
 
 #   Print em console: widht, height and channels of img
@@ -107,7 +115,7 @@ def get_img_def(path = "./"):
     return imagens
 
 
-#   Media de pixels da imagem -  para imagens BGR 
+#   Media de pixels da imagem - para imagens BGR 
 def media(vet):
     total = 0
     for i in vet:
@@ -116,9 +124,11 @@ def media(vet):
 
 def percorre_pixels(img):
     # print(img.shape)
-    print_img_params(img)
+    # print_img_params(img)
     # height, width, channels = img.shape # comment if use in grayscale
+    
     height, width = img.shape
+    video = cv2.VideoWriter('ult.avi',cv2.VideoWriter_fourcc(*'DIVX'),15, (width, height))
     
     for py in range(0, height):
         for px in range(0,  width):
@@ -127,9 +137,12 @@ def percorre_pixels(img):
             if pixel >= 200: pixel = 255
             if pixel <= 100 : pixel = 0
             img[py][px] = pixel
+            video.write(img)
 
             # for pixel_index in range(len(img[py][px])): #   comment is use iin grayscale
             #     img[py][px][pixel_index] = pixel
+
+    video.release()
 
     return img
     # show_img(img)
@@ -146,12 +159,17 @@ def compare_img(img1, img2):
     print("comparando")
     h_1, w_1 = img1.shape[:2]
     h_2, w_2 = img2.shape[:2]
-    print(h_1, h_2, w_1, w_2)
+    # print(h_1, h_2, w_1, w_2)
 
     result = np.zeros((h_1, w_1, 3), np.uint8)
-
+    count = 0
     for py in range(h_1):
-        # if py % 100 == 0: show_img(result)
+        if py % 30 == 0: 
+            # cv2.imshow("image", cv2.resize(result, (1024, 640), interpolation= cv2.INTER_AREA))
+            show_img(result)
+        # if py % 10 == 0: 
+        #     count += 1
+        #     cv2.imwrite("Resultado/result%s.jpg" %(count), result)
         for px in range(w_1):
             try:
                 if img1[py][px] == 255 and img2[py][px] == 255: continue
@@ -169,6 +187,9 @@ def compare_img(img1, img2):
     return result
     
 def compare_pixel(img1, img2, y, x):
+    # if img1[y][x] == img2[y][x]: return True 
+    # else: return False
+
     pixel = img1[y][x]
     if pixel == 255: return False
 
@@ -239,10 +260,7 @@ def mostra_ponto(img, ponto):
     for y in range(ponto.y-2, ponto.y + 3):
         for x in range(ponto.x-2, ponto.x + 3):
             result[y][x] = [0, 0, 255]
-    show_resized_img(result, RESIZE)
-
-
-
+    show_img(result, "PONTO")
 
 def get_angulo(p1, p2):
     if p1.x-p2.x == 0: return 0
@@ -282,14 +300,15 @@ def format_img(img):
         angulos.append(get_angulo(ponto_mais_alto, ponto))
     # print(angulos)
     moda = get_moda(angulos)
-    print("moda:", moda)
+    # print("moda:", moda)
     img = rotate_bound(img, -moda)
-    show_img(img)
+    # show_img(img)
+    cv2.imwrite("02 - Rotacionada.jpg", img)
+
 
     img = retira_bordas(img)  
     
     return img
-
 
 def retira_bordas(img):
     h, w = img.shape[:2]
@@ -336,8 +355,9 @@ def get_ponto_esquerda(img):
                 break
     pontos = merge_sort(pontos)
     print("PONTOS")
-    print(pontos)
+    # print(pontos)
     moda = int(get_moda(pontos))
+    print(Ponto(moda, 0).to_string())
     return Ponto(moda, 0)
 
 def alinha_imagem_com_a_outra(img1, img2):
@@ -379,58 +399,100 @@ def alinha_imagem_com_a_outra(img1, img2):
 
     return result
 
+def ajuste_erros(img):
+    pass
+    h, w = img.shape[:2]
+    for y in range(h):
+        for x in range(w):
+            if y >= h: continue
+            if x >= w: continue
+            try:
+                if img[y][x][2] == 255:
+                    img[y][x] = verifica_pixel_vermelho_unico(img, y, x)
+            except :
+                print("width: %s,\t height: %s\nx: %s,\t y: %s" %(w,h,x,y))
+                input()
+    return img
+
+def verifica_pixel_vermelho_unico(img, y, x):
+    h, w = img.shape[:2]
+    count = 0
+    for py in range(y-2, y+3):
+        for px in range(x-2, x+3):
+            if py >= h: continue
+            if px >= w: continue
+            if py == y and px == x: continue
+            # if img[py][px][2] == 255: return [0,0,255]
+            if img[py][px][2] == 255: count += 1
+
+    if count >= 3: return [0,0,255]
+    return [255,0,0]
+
+def start():
+    bases =  get_img_base(PATH_BASE)
+    defeitos = get_img_def(PATH_DEF)
+
+    h, w = defeitos[INDEX_DEF].shape[:2]
+
+    #   Mostra imagem antes de qualquer alteracao
+    show_img(defeitos[INDEX_DEF], "IMAGEM SEM ALTERACOES")
+
+    print("SATURANDO IMG DEF")
+    img2 = percorre_pixels(defeitos[INDEX_DEF])
+    cv2.imwrite("01 - Saturacao.jpg", img2)
+
+
+    #   Mostra Imagem com pixels saturados
+    print("IMG DEF SATURADA")
+    show_img(img2, "IMAGEM SATURADA")
+
+    print("SATURANDO IMG BASE")
+    img1 = percorre_pixels(bases[INDEX_BASE])
+
+    img1 = format_img(img1)
+    img2 = format_img(img2)
+
+    #   Mostra imagem angulada Corrigida
+    print("IMAGEM ANGULO CORRIGIDO")
+    show_img(img2, "ANGULO CORRIGIDO")
+    cv2.imwrite("03 - Angulada Sem borda.jpg", img2)
 
 
 
-
-bases =  get_img_base(PATH_BASE)
-defeitos = get_img_def(PATH_DEF)
+    img2 = alinha_imagem_com_a_outra(img1, img2)
 
 
-img1 = percorre_pixels(bases[INDEX_BASE])
-img2 = percorre_pixels(defeitos[INDEX_DEF])
-
-show_img(defeitos[INDEX_DEF])
-show_img(img2)
-
-# show_img(img1)
-# show_img(img2)
-
-# result = compare_img(img1, img2)
-# show_img(result)
-img1 = format_img(img1)
-img2 = format_img(img2)
-show_img(img2)
-ponto = get_ponto_esquerda(img2)
-mostra_ponto(img2, ponto)
-
-# show_img(compare_img(img2, alinha_imagem_com_a_outra(img1, img2)))
-
-# show_img(img2)
-
-img2 = alinha_imagem_com_a_outra(img1, img2)
-img2 = alinha_imagem_com_a_outra(img1, img2)
-show_img(img2)
-
-# show_img(img1)
-# show_img(img2)
-
-# result = compare_img(img1, img2)
-result = compare_img(img1, img2)
-show_img(result)
-show_img(img1)
-show_img(img2)
-
-show_resized_img(result, RESIZE)
+    #   Mostra Imagem Alinhada com a imagem base 
+    print("POSICIONAMENTO CORRIGIDO")
+    show_img(img2, "POSICAO CORRIGIDA")
+    cv2.imwrite("04 - Alinhada.jpg", img2)
 
 
+    print("COMPARANDO IMAGEM")
+    result = compare_img(img1, img2)
+
+    #   Mostra o Resultado da comparacao, a imagem original utilizada para fazer a mascara, e a imagem comparada
+    print("DEFININDO ERROS")
+    result = ajuste_erros(result)
+
+    cv2.imwrite("result.jpg", result)
+
+    print("RESULTADO")
+    show_img(result, "RESULTADO COMPARACAO")
+    show_img(img1, "BASE")
+    show_img(img2, "IMG TESTADA")
+
+    #   Mostra o resultado Menor para uma visão geral
+    show_resized_img(result, RESIZE)
 
 
-
-
-
-
-
-
+# r = 63
+# bases =  get_img_base(PATH_BASE)
+# show_img(bases[INDEX_BASE])
+# show_img(np.uint8(bases[INDEX_BASE]/r) * r)
+# show_img(bases[INDEX_BASE])
+# show_img(percorre_pixels(bases[INDEX_BASE]))
+# show_img(np.uint8(bases[INDEX_BASE]/r) * r)
+start()
 
 
