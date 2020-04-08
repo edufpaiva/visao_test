@@ -225,7 +225,7 @@ def satura(img, show_progress = False, delay = 0):
     return img
                         
 def verifica_relevancia_do_pixel(img, ponto, show_progress, delay):
-    tam = 100
+    tam = 50
     height, width = img.shape[:2]
     if show_progress:
         zoom = get_empty_img(img, tam, tam)
@@ -238,7 +238,104 @@ def verifica_relevancia_do_pixel(img, ponto, show_progress, delay):
                 zoom[y][x] = img[py][px]
 
         show_img(circula_pontos(img,  [ponto], delay)  , 'progress', delay)
-        show_img(circula_pontos(zoom, [Ponto(int(tam/2), int(tam/2))], delay), 'zoom', delay, tam*3, tam*3)
+        show_img(circula_pontos(zoom, [Ponto(int(tam/2), int(tam/2))], delay), 'zoom', delay, tam*6, tam*6)
+
+    x = ponto.x
+    y = ponto.y
+
+    # 0 0 0
+    # 0 1 0
+    # 0 0 0
+    if img[y-1][x] == 255 and img[y-1][x-1] == 255 and img[y-1][x+1] == 255 and img[y][x-1] == 255 and img[y][x+1] == 255 and img[y+1][x-1] == 255 and img[y+1][x] == 255 and img[y+1][x+1] == 255: return True
+    # 1 0 0
+    # 1 1 0
+    # 1 0 0
+    if img[y-1][x] == 255 and img[y-1][x-1] != 255 and img[y-1][x+1] == 255 and img[y][x-1] != 255 and img[y][x+1] == 255 and img[y+1][x-1] != 255 and img[y+1][x] == 255 and img[y+1][x+1] == 255: return True
+    # 1 1 1
+    # 0 1 0
+    # 0 0 0
+    if img[y-1][x] != 255 and img[y-1][x-1] != 255 and img[y-1][x+1] != 255 and img[y][x-1] == 255 and img[y][x+1] == 255 and img[y+1][x-1] == 255 and img[y+1][x] == 255 and img[y+1][x+1] == 255: return True
+    # 0 0 1
+    # 0 1 1
+    # 0 0 1
+    if img[y-1][x] == 255 and img[y-1][x-1] == 255 and img[y-1][x+1] != 255 and img[y][x-1] == 255 and img[y][x+1] != 255 and img[y+1][x-1] == 255 and img[y+1][x] == 255 and img[y+1][x+1] != 255: return True
+    # 0 0 0
+    # 0 1 0
+    # 1 1 1
+    if img[y-1][x] == 255 and img[y-1][x-1] == 255 and img[y-1][x+1] == 255 and img[y][x-1] == 255 and img[y][x+1] == 255 and img[y+1][x-1] != 255 and img[y+1][x] != 255 and img[y+1][x+1] != 255: return True
+    
+    # 0 0 0 0 0
+    # 0 0 0 0 0
+    # 0 0 P 1 0
+    # 0 0 0 0 0
+    # 0 0 0 0 0
+    if img[y-1][x-1] == 255 and img[y-1][x] == 255 and img[y-1][x+1] == 255 and img[y][x+2] == 255 and img[y][x-1] == 255 and img[y][x+1] != 255 and img[y][x+2] == 255 and img[y+1][x-1] == 255 and img[y+1][x] == 255 and img[y+1][x+1] == 255 and img[y+1][x+2] == 255: return True
+    
+    # 0 0 0 0 
+    # 0 1 0 0 
+    # 0 0 P 0 
+    # 0 0 0 0 
+    if  img[y-2][x-2] == 255 and img[y-2][x-1] == 255 and img[y-2][ x ] == 255 and img[y-2][x+1] == 255 and img[y-2][x+2] == 255 and img[y-1][x-2] == 255 and img[y-1][x-1] != 255 and img[y-1][ x ] == 255 and img[y-1][x+1] == 255 and img[y-1][x+2] == 255 and img[ y ][x-2] == 255 and img[ y ][x-1] == 255                          and img[ y ][x+1] == 255 and img[ y ][x+2] == 255 and img[y+1][x-2] == 255 and img[y+1][x-1] == 255 and img[y+1][ x ] == 255 and img[y+1][x+1] == 255 and img[y+1][x+2] == 255 and img[y+2][x-2] == 255 and img[y+2][x-1] == 255 and img[y+2][ x ] == 255 and img[y+2][x+1] == 255 and img[y+2][x+2] == 255: return True
+    # 0 0 0 0 0
+    # 0 0 0 0 0
+    # 0 0 P 0 0
+    # 0 0 1 0 0
+    # 0 0 0 0 0
+    if  img[y-2][x-2] == 255 and img[y-2][x-1] == 255 and img[y-2][ x ] == 255 and img[y-2][x+1] == 255 and img[y-2][x+2] == 255 and img[y-1][x-2] == 255 and img[y-1][x-1] == 255 and img[y-1][ x ] == 255 and img[y-1][x+1] == 255 and img[y-1][x+2] == 255 and img[ y ][x-2] == 255 and img[ y ][x-1] == 255                          and img[ y ][x+1] == 255 and img[ y ][x+2] == 255 and img[y+1][x-2] == 255 and img[y+1][x-1] == 255 and img[y+1][ x ] != 255 and img[y+1][x+1] == 255 and img[y+1][x+2] == 255 and img[y+2][x-2] == 255 and img[y+2][x-1] == 255 and img[y+2][ x ] == 255 and img[y+2][x+1] == 255 and img[y+2][x+2] == 255: return True
+    # 0 0 0 0 0
+    # 0 0 0 1 0
+    # 0 0 P 0 0
+    # 0 0 0 0 0
+    # 0 0 0 0 0
+    if  img[y-2][x-2] == 255 and img[y-2][x-1] == 255 and img[y-2][ x ] == 255 and img[y-2][x+1] == 255 and img[y-2][x+2] == 255 and img[y-1][x-2] == 255 and img[y-1][x-1] == 255 and img[y-1][ x ] == 255 and img[y-1][x+1] != 255 and img[y-1][x+2] == 255 and img[ y ][x-2] == 255 and img[ y ][x-1] == 255                          and img[ y ][x+1] == 255 and img[ y ][x+2] == 255 and img[y+1][x-2] == 255 and img[y+1][x-1] == 255 and img[y+1][ x ] == 255 and img[y+1][x+1] == 255 and img[y+1][x+2] == 255 and img[y+2][x-2] == 255 and img[y+2][x-1] == 255 and img[y+2][ x ] == 255 and img[y+2][x+1] == 255 and img[y+2][x+2] == 255: return True
+    # 0 0 0 0 0
+    # 0 0 0 0 0
+    # 0 0 P 1 0
+    # 0 0 0 0 0
+    # 0 0 0 0 0
+    if  img[y-2][x-2] == 255 and img[y-2][x-1] == 255 and img[y-2][ x ] == 255 and img[y-2][x+1] == 255 and img[y-2][x+2] == 255 and img[y-1][x-2] == 255 and img[y-1][x-1] == 255 and img[y-1][ x ] == 255 and img[y-1][x+1] == 255 and img[y-1][x+2] == 255 and img[ y ][x-2] == 255 and img[ y ][x-1] == 255                          and img[ y ][x+1] != 255 and img[ y ][x+2] == 255 and img[y+1][x-2] == 255 and img[y+1][x-1] == 255 and img[y+1][ x ] == 255 and img[y+1][x+1] == 255 and img[y+1][x+2] == 255 and img[y+2][x-2] == 255 and img[y+2][x-1] == 255 and img[y+2][ x ] == 255 and img[y+2][x+1] == 255 and img[y+2][x+2] == 255: return True
+    # 0 0 0 0 0
+    # 0 0 0 0 0
+    # 0 0 P 0 0
+    # 0 0 0 1 0
+    # 0 0 0 0 0
+    if  img[y-2][x-2] == 255 and img[y-2][x-1] == 255 and img[y-2][ x ] == 255 and img[y-2][x+1] == 255 and img[y-2][x+2] == 255 and img[y-1][x-2] == 255 and img[y-1][x-1] == 255 and img[y-1][ x ] == 255 and img[y-1][x+1] == 255 and img[y-1][x+2] == 255 and img[ y ][x-2] == 255 and img[ y ][x-1] == 255                          and img[ y ][x+1] == 255 and img[ y ][x+2] == 255 and img[y+1][x-2] == 255 and img[y+1][x-1] == 255 and img[y+1][ x ] == 255 and img[y+1][x+1] != 255 and img[y+1][x+2] == 255 and img[y+2][x-2] == 255 and img[y+2][x-1] == 255 and img[y+2][ x ] == 255 and img[y+2][x+1] == 255 and img[y+2][x+2] == 255: return True
+    # 0 0 0 0 0
+    # 0 0 0 0 0
+    # 0 0 P 0 0
+    # 0 1 0 0 0
+    # 0 0 0 0 0
+    if  img[y-2][x-2] == 255 and img[y-2][x-1] == 255 and img[y-2][ x ] == 255 and img[y-2][x+1] == 255 and img[y-2][x+2] == 255 and img[y-1][x-2] == 255 and img[y-1][x-1] == 255 and img[y-1][ x ] == 255 and img[y-1][x+1] == 255 and img[y-1][x+2] == 255 and img[ y ][x-2] == 255 and img[ y ][x-1] == 255                          and img[ y ][x+1] == 255 and img[ y ][x+2] == 255 and img[y+1][x-2] == 255 and img[y+1][x-1] != 255 and img[y+1][ x ] == 255 and img[y+1][x+1] == 255 and img[y+1][x+2] == 255 and img[y+2][x-2] == 255 and img[y+2][x-1] == 255 and img[y+2][ x ] == 255 and img[y+2][x+1] == 255 and img[y+2][x+2] == 255: return True
+    #  0 0 1 
+    #  0 P 1 
+    #  0 1 1 
+    #  0 0 1 
+    if  img[y-1][x-1] == 255 and img[y-1][ x ] == 255 and img[ y ][x+1] != 255 and img[ y ][x-1] == 255                          and img[ y ][x+1] != 255 and img[y+1][x-1] == 255 and img[y+1][ x ] != 255 and img[y+1][x+1] != 255 and img[y+2][x-1] == 255 and img[y+2][ x ] == 255 and img[y+2][x+1] != 255: return True
+    # 0 0 0 0 0
+    # 0 1 1 1 1
+    # 0 0 P 1 0
+    # 0 0 0 0 0
+    # 0 0 0 0 0
+    if  img[y-2][x-2] == 255 and img[y-2][x-1] == 255 and img[y-2][ x ] == 255 and img[y-2][x+1] == 255 and img[y-2][x+2] == 255 and img[y-1][x-2] == 255 and img[y-1][x-1] != 255 and img[y-1][ x ] != 255 and img[y-1][x+1] != 255 and img[y-1][x+2] != 255 and img[ y ][x-2] == 255 and img[ y ][x-1] == 255                          and img[ y ][x+1] != 255 and img[ y ][x+2] == 255 and img[y+1][x-2] == 255 and img[y+1][x-1] == 255 and img[y+1][ x ] == 255 and img[y+1][x+1] == 255 and img[y+1][x+2] == 255 and img[y+2][x-2] == 255 and img[y+2][x-1] == 255 and img[y+2][ x ] == 255 and img[y+2][x+1] == 255 and img[y+2][x+2] == 255: return True
+    # 0 0 0 0 0
+    # 0 1 0 0 0
+    # 0 1 P 0 0
+    # 0 1 1 0 0
+    # 0 1 0 0 0
+    if  img[y-2][x-2] == 255 and img[y-2][x-1] == 255 and img[y-2][ x ] == 255 and img[y-2][x+1] == 255 and img[y-2][x+2] == 255 and img[y-1][x-2] == 255 and img[y-1][x-1] != 255 and img[y-1][ x ] == 255 and img[y-1][x+1] == 255 and img[y-1][x+2] == 255 and img[ y ][x-2] == 255 and img[ y ][x-1] != 255                          and img[ y ][x+1] == 255 and img[ y ][x+2] == 255 and img[y+1][x-2] == 255 and img[y+1][x-1] != 255 and img[y+1][ x ] != 255 and img[y+1][x+1] == 255 and img[y+1][x+2] == 255 and img[y+2][x-2] == 255 and img[y+2][x-1] != 255 and img[y+2][ x ] == 255 and img[y+2][x+1] == 255 and img[y+2][x+2] == 255: return True
+    # 0 0 0 0 0
+    # 0 0 0 0 0
+    # 0 0 P 1 0
+    # 0 1 1 1 1
+    # 0 0 0 0 0
+    if  img[y-2][x-2] == 255 and img[y-2][x-1] == 255 and img[y-2][ x ] == 255 and img[y-2][x+1] == 255 and img[y-2][x+2] == 255 and img[y-1][x-2] == 255 and img[y-1][x-1] == 255 and img[y-1][ x ] == 255 and img[y-1][x+1] == 255 and img[y-1][x+2] == 255 and img[ y ][x-2] == 255 and img[ y ][x-1] == 255                          and img[ y ][x+1] != 255 and img[ y ][x+2] == 255 and img[y+1][x-2] == 255 and img[y+1][x-1] != 255 and img[y+1][ x ] != 255 and img[y+1][x+1] != 255 and img[y+1][x+2] != 255 and img[y+2][x-2] == 255 and img[y+2][x-1] == 255 and img[y+2][ x ] == 255 and img[y+2][x+1] == 255 and img[y+2][x+2] == 255: return True
+
+    # if  img[y-2][x-2] == 255 and img[y-2][x-1] == 255 and img[y-2][ x ] == 255 and img[y-2][x+1] == 255 and img[y-2][x+2] == 255
+    # and img[y-1][x-2] == 255 and img[y-1][x-1] == 255 and img[y-1][ x ] == 255 and img[y-1][x+1] == 255 and img[y-1][x+2] == 255
+    # and img[ y ][x-2] == 255 and img[ y ][x-1] == 255                          and img[ y ][x+1] == 255 and img[ y ][x+2] == 255
+    # and img[y+1][x-2] == 255 and img[y+1][x-1] == 255 and img[y+1][ x ] == 255 and img[y+1][x+1] == 255 and img[y+1][x+2] == 255
+    # and img[y+2][x-2] == 255 and img[y+2][x-1] == 255 and img[y+2][ x ] == 255 and img[y+2][x+1] == 255 and img[y+2][x+2] == 255: return True
+
 
     return False
     pass
@@ -259,22 +356,23 @@ def remove_pixel_isolado(img, show_progress = False, delay = 0):
             if img[y-1][x] == 255 and img[y][x] != 255 and img[y+1][x] == 255:
                 if verifica_relevancia_do_pixel(img, Ponto(x, y), show_progress, delay):
                     img[y][x] = 255
-                    verifica_relevancia_do_pixel(img, Ponto(x, y), show_progress, delay)
-
+                    show_img(circula_pontos(img, [Ponto(x, y)]), "progress", 0)
+                    
             if img[y][x-1] == 255 and img[y][x] != 255 and img[y][x+1] == 255:
                 if verifica_relevancia_do_pixel(img, Ponto(x, y), show_progress, delay):
                     img[y][x] = 255
-                    verifica_relevancia_do_pixel(img, Ponto(x, y), show_progress, delay)
-                
+                    show_img(circula_pontos(img, [Ponto(x, y)]), "progress", 0)
+                    
             if img[y-1][x] == 255 and img[y][x] != 255 and img[y+1][x] != 255 and img[y+2][x] == 255:
                 if verifica_relevancia_do_pixel(img, Ponto(x, y), show_progress, delay):
                     img[y][x] = 255
-                    verifica_relevancia_do_pixel(img, Ponto(x, y), show_progress, delay)
-            
+                    show_img(circula_pontos(img, [Ponto(x, y)]), "progress", 0)
+
             if img[y][x-1] == 255 and img[y][x] != 255 and img[y][x+1] != 255 and img[y][x+2] == 255:
                 if verifica_relevancia_do_pixel(img, Ponto(x, y), show_progress, delay):
                     img[y][x] = 255
-                    verifica_relevancia_do_pixel(img, Ponto(x, y), show_progress, delay)
+                    show_img(circula_pontos(img, [Ponto(x, y)]), "progress", 0)
+                    
 
 
 
