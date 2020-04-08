@@ -32,8 +32,10 @@ class Ponto:
     def to_string(self):
         return("x: %i, y: %i" %(self.x, self.y))
 
-def get_empty_img(img):
+def get_empty_img(img, height, width):
     h_1, w_1 = img.shape[:2]
+    if height != None and width != None:
+        h_1, w_1 = height, width
     return np.zeros((h_1, w_1, 3), np.uint8)
 
 def get_empty_img_grayscale(img):
@@ -61,12 +63,12 @@ def carrega_img_def(dir_name):
         imagens.append(cv2.imread(path + file_name, cv2.IMREAD_GRAYSCALE))
     return imagens
 
-def show_img(img, name='image', delay = 0):
+def show_img(img, name='image', delay = 0, height=640, width=1024):
     result = img
     
     # name='image'    #   Comment if u wanto to rename windows
 
-    cv2.imshow(name, cv2.resize(result, (1024, 640), interpolation= cv2.INTER_AREA))
+    cv2.imshow(name, cv2.resize(result, (width, height), interpolation= cv2.INTER_AREA))
     if delay == 0: print("============================\n\tpress enter\n============================\n")
     cv2.waitKey(delay)
 
@@ -81,6 +83,30 @@ def mostra_pontos(img, pontos, delay=0):
                 color[y][x] = [0,0, 255]
 
     show_img(color, "progress", delay)
+    return color
+
+def circula_pontos(img, pontos, delay=0):
+    height, width = img.shape[:2]
+    color =  copia_colorida(img)
+
+    for ponto in pontos:
+        x1 = ponto.x - 3
+        x2 = ponto.x + 4
+        y1 = ponto.y - 3
+        y2 = ponto.y + 4
+        if x1 < 0: x1 = 0
+        if x2 > width: x2 = width
+        if y1 < 0: y1 = 0
+        if y2 > height: y2 = height
+        for x in range(x1, x2):
+            color[y1][x] = [0, 0, 255]
+            color[y2][x] = [0, 0, 255]
+        for y in range(y1, y2):
+            color[y][x1] = [0, 0, 255]
+            color[y][x2] = [0, 0, 255]
+
+
+    # show_img(color, "progress", delay)
     return color
 
 def linha_vertical(img, ponto, show_progress = False, delay = 0):
@@ -160,7 +186,7 @@ def satura(img, show_progress = False, delay = 0):
 
     for py in range(0, height):
         if show_progress:
-            if py % int(height/20) == 0: 
+            if py % int(height/10) == 0: 
                 # show_img(img, "progress", delay)
                 linha_horizontal(img, Ponto(0, py), show_progress, delay)
 
@@ -180,7 +206,9 @@ def satura(img, show_progress = False, delay = 0):
     not_colored = []
     for py in range(0, height):
         if show_progress:
-            if py % int(height/20) == 0: show_img(img, "progress", delay)
+            if py % int(height/10) == 0: 
+                linha_horizontal(img, Ponto(0, py), show_progress, delay)
+                # show_img(img, "progress", delay)
             # if py % 30 == 0: show_img(img, "progress", delay)
         for px in range(0,  width):
             if img[py][px] >= 200:  img[py][px] = 255
@@ -195,40 +223,58 @@ def satura(img, show_progress = False, delay = 0):
         show_img(img, "progress")
 
     return img
+                        
+def verifica_relevancia_do_pixel(img, ponto, show_progress, delay):
+    tam = 100
+    height, width = img.shape[:2]
+    if show_progress:
+        zoom = get_empty_img(img, tam, tam)
+        for y in range(tam):
+            for x in range(tam):
+                py = y + ponto.y - int(tam/2)
+                px = x + ponto.x - int(tam/2)
+                if py >= height or py < 0: continue
+                if px >= width or px < 0: continue
+                zoom[y][x] = img[py][px]
+
+        show_img(circula_pontos(img,  [ponto], delay)  , 'progress', delay)
+        show_img(circula_pontos(zoom, [Ponto(int(tam/2), int(tam/2))], delay), 'zoom', delay, tam*3, tam*3)
+
+    return False
+    pass
 
 def remove_pixel_isolado(img, show_progress = False, delay = 0):
-    height, width = img.shape[:2]
-    for y in range(height):
-        count = 0
-        for x in range(width):
-            if img[y][x] != 255: count += 1
-            if count > width * 0.10: continue
-        if count > width * 0.10 or count == 0: 
-            # print(count, width * 0.10)
-            continue
-        else: 
-            pass
-            # print("MENOR", count)
-    
-        for x in range(0, width, 3):
-            count = 0
-            for px in range(x, width):
-                if img[y][px] != 255:
-                    count += 1
-                else: 
-                    break
-            
-            if count < 3:
-                for px in range(x, x+2):
-                    if px >= width: break
-                    img[y][px] = 255
-                if show_progress:
-                    mostra_pontos(img, [Ponto(x,y)], delay)
+    n_img = img.copy()
+    h, w = img.shape[:2]
+
+    # for y in range(h):
+    #     if show_progress:
+    #         if y % int(h/10) == 0: 
+    #             linha_horizontal(n_img, Ponto(0, y), show_progress, delay)
+    #     for x in range(w):
+    #         if n_img[y][x] < 255: n_img[y][x] = 0
+
+    for x in range(1, w -1):
+        for y in range(1, h -1):
+            if img[y-1][x] == 255 and img[y][x] != 255 and img[y+1][x] == 255:
+                if verifica_relevancia_do_pixel(img, Ponto(x, y), show_progress, delay):
+                    img[y][x] = 255
+                    verifica_relevancia_do_pixel(img, Ponto(x, y), show_progress, delay)
+
+            if img[y][x-1] == 255 and img[y][x] != 255 and img[y][x+1] == 255:
+                if verifica_relevancia_do_pixel(img, Ponto(x, y), show_progress, delay):
+                    img[y][x] = 255
+                    verifica_relevancia_do_pixel(img, Ponto(x, y), show_progress, delay)
                 
+            if img[y-1][x] == 255 and img[y][x] != 255 and img[y+1][x] != 255 and img[y+2][x] == 255:
+                if verifica_relevancia_do_pixel(img, Ponto(x, y), show_progress, delay):
+                    img[y][x] = 255
+                    verifica_relevancia_do_pixel(img, Ponto(x, y), show_progress, delay)
             
-        
-
-
+            if img[y][x-1] == 255 and img[y][x] != 255 and img[y][x+1] != 255 and img[y][x+2] == 255:
+                if verifica_relevancia_do_pixel(img, Ponto(x, y), show_progress, delay):
+                    img[y][x] = 255
+                    verifica_relevancia_do_pixel(img, Ponto(x, y), show_progress, delay)
 
 
 
