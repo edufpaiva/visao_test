@@ -16,6 +16,9 @@ import cv2
 import numpy as np
 import math
 
+import tkinter as tk
+from tkinter import messagebox
+
 PATH_BASE = "./bases/01 - completo/"
 PATH_DEF = "./defeitos/01 - completo/"
 N_IMAGENS_BASE = 1
@@ -341,27 +344,52 @@ def remove_pixel_isolado(img, show_progress = False, delay = 0):
     #     for x in range(w):
     #         if n_img[y][x] < 255: n_img[y][x] = 0
 
+    if show_progress:
+        root = tk.Tk()
+        S = tk.Scrollbar(root)
+        T = tk.Text(root, height=4, width=50)
+        S.pack(side=tk.RIGHT, fill=tk.Y)
+        T.pack(side=tk.LEFT, fill=tk.Y)
+        S.config(command=T.yview)
+        T.config(yscrollcommand=S.set)
+        quote = "O processo de limpeza da imagem é demorado."
+        T.insert(tk.END, quote)
+
+        msg = tk.messagebox.askquestion("Visualizar", "Visualizar processo?", icon="warning")
+        if msg == 'yes': 
+            msg2 = tk.messagebox.askquestion("Visualizar", "Pausar em cada erro encontrado??", icon="warning")
+            if msg2 == 'yes':
+                delay = 0
+            else:
+                delay = 1
+            root.destroy()
+        else: 
+            show_progress = False
+            root.destroy()
+        
+        root.mainloop()
+
     for x in range(1, w -1):
         for y in range(1, h -1):
             if img[y-1][x] == 255 and img[y][x] != 255 and img[y+1][x] == 255:
                 if verifica_relevancia_do_pixel(img, Ponto(x, y), show_progress, delay):
                     img[y][x] = 255
-                    show_img(circula_pontos(img, [Ponto(x, y)]), "progress", 0)
+                    show_img(circula_pontos(img, [Ponto(x, y)]), "progress", delay)
                     
             if img[y][x-1] == 255 and img[y][x] != 255 and img[y][x+1] == 255:
                 if verifica_relevancia_do_pixel(img, Ponto(x, y), show_progress, delay):
                     img[y][x] = 255
-                    show_img(circula_pontos(img, [Ponto(x, y)]), "progress", 0)
+                    show_img(circula_pontos(img, [Ponto(x, y)]), "progress", delay)
                     
             if img[y-1][x] == 255 and img[y][x] != 255 and img[y+1][x] != 255 and img[y+2][x] == 255:
                 if verifica_relevancia_do_pixel(img, Ponto(x, y), show_progress, delay):
                     img[y][x] = 255
-                    show_img(circula_pontos(img, [Ponto(x, y)]), "progress", 0)
+                    show_img(circula_pontos(img, [Ponto(x, y)]), "progress", delay)
 
             if img[y][x-1] == 255 and img[y][x] != 255 and img[y][x+1] != 255 and img[y][x+2] == 255:
                 if verifica_relevancia_do_pixel(img, Ponto(x, y), show_progress, delay):
                     img[y][x] = 255
-                    show_img(circula_pontos(img, [Ponto(x, y)]), "progress", 0)
+                    show_img(circula_pontos(img, [Ponto(x, y)]), "progress", delay)
                     
 
 
