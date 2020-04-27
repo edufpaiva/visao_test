@@ -27,6 +27,14 @@ INDEX_BASE = 0
 INDEX_DEF = 1
 RESIZE = 30
 # RESIZE = 100
+BLUE    = [255,  0 ,  0 ]
+GREEN   = [ 0 , 255,  0 ]
+RED     = [ 0 ,  0 , 255]
+BLACK   = [ 0 ,  0 ,  0 ]
+WHITE   = [255, 255, 255]
+
+PRINT_RESULT = False
+PRINT_COUNT = 1
 
 class Ponto:
     def __init__(self, x, y):
@@ -34,7 +42,13 @@ class Ponto:
         self.y = y
     def to_string(self):
         return("x: %i, y: %i" %(self.x, self.y))
+
+def print_result(img):
     
+    global PRINT_COUNT
+    cv2.imwrite("Print/Print-%s.png" %(PRINT_COUNT), img)
+    PRINT_COUNT += 1
+
 def get_angulo( p2, p1):
     if p1.x-p2.x == 0: return 0
     return math.degrees(math.atan((p1.y-p2.y)/(p1.x-p2.x)))
@@ -93,6 +107,17 @@ def copia_colorida(img):
                 copy[y][x] = img[y][x]
         return copy
 
+def copia_escala_cinza(img):
+    try:
+        return cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+    except:
+        h, w = img.shape[:2]
+        copy = get_empty_img_grayscale(img)
+        for y in range(h):
+            for x in range(w):
+                copy[y][x][0] = img[y][x]
+        return copy
+
 def carrega_img_base(dir_name):
     path, dirs, files = next(os.walk("./bases/" + dir_name))
     
@@ -107,6 +132,23 @@ def carrega_img_def(dir_name):
     for file_name in files:
         imagens.append(cv2.imread(path + file_name, cv2.IMREAD_GRAYSCALE))
     return imagens
+
+def zoom_img(img, py, px, precision = 50, delay=0, name="zoom", width=400, height=400):
+    zoom = get_empty_img(img, precision*2, precision*2)
+    h, w = img.shape[:2]
+    py -= precision
+    px -= precision
+
+    for y in range(precision*2):
+        for x in range(precision * 2):
+            if py + y <  0: continue
+            if py + y >= h: continue
+            if px + x <  0: continue
+            if px + x >= w: continue
+            zoom[y][x] = img[py + y][px + x]
+
+    show_img(zoom, name, delay, height, width)
+    return zoom
 
 def show_img(img, name='image', delay = 0, height=640, width=1024):
     result = img
@@ -130,26 +172,32 @@ def mostra_pontos(img, pontos, delay=0):
     show_img(color, "progress", delay)
     return color
 
-def circula_pontos(img, pontos, delay=0):
+def circula_pontos(img, pontos, delay=0, tamanho = 4):
     height, width = img.shape[:2]
     color =  copia_colorida(img)
 
     for ponto in pontos:
-        x1 = ponto.x - 3
-        x2 = ponto.x + 4
-        y1 = ponto.y - 3
-        y2 = ponto.y + 4
+        x1 = ponto.x - tamanho
+        x2 = ponto.x + tamanho + 1
+        y1 = ponto.y - tamanho
+        y2 = ponto.y + tamanho + 1
         if x1 < 0: x1 = 0
         if x2 > width: x2 = width
         if y1 < 0: y1 = 0
         if y2 > height: y2 = height
         for x in range(x1, x2):
+            color[y1+1][x] = [0, 0, 255]
+            color[y2-1][x] = [0, 0, 255]
+        for y in range(y1, y2):
+            color[y][x1+1] = [0, 0, 255]
+            color[y][x2-1] = [0, 0, 255]
+        for x in range(x1+1, x2-1):
             color[y1][x] = [0, 0, 255]
             color[y2][x] = [0, 0, 255]
-        for y in range(y1, y2):
+        for y in range(y1+1, y2-1):
             color[y][x1] = [0, 0, 255]
             color[y][x2] = [0, 0, 255]
-
+        
 
     # show_img(color, "progress", delay)
     return color
@@ -163,6 +211,8 @@ def linha_vertical(img, ponto, show_progress = False, delay = 0):
         if show_progress and y % int(height/10) == 0: show_img(color, "progress", delay)
     
     # show_img(color, "progress")
+    if PRINT_RESULT:print_result(color)
+
     return color
 
 def linha_horizontal(img, ponto, show_progress = False, delay = 0):
@@ -174,6 +224,9 @@ def linha_horizontal(img, ponto, show_progress = False, delay = 0):
         if show_progress and x % int(width/10) == 0: show_img(color, "progress", delay)
     
     # show_img(color, "progress")
+
+    if PRINT_RESULT:print_result(color)
+
     return color
 
 def get_pixel_mais_acima(img):
@@ -264,8 +317,6 @@ def remove_bordas(img, show_progress = False, delay = 0):
         print("ERROR AJUSTA IMAGEM CONVERTER PARA GRAY")
         return copy
     
-
-
 def satura(img, show_progress = False, delay = 0):
     height, width = img.shape[:2]
     
@@ -275,12 +326,11 @@ def satura(img, show_progress = False, delay = 0):
 
 
     for py in range(0, height):
-        if show_progress:
-            if py % int(height/10) == 0: 
-                # show_img(img, "progress", delay)
-                linha_horizontal(img, Ponto(0, py), show_progress, delay)
+        
 
-            # if py % 30 == 0: show_img(img, "progress", delay)
+        if py % int(height/10) == 0 and show_progress: 
+            linha_horizontal(img, Ponto(0, py), show_progress, delay)
+
         for px in range(0,  width):
             pixel = int(img[py][px] / 50) * 50
             if pixel >= 200: pixel = 255
@@ -292,14 +342,16 @@ def satura(img, show_progress = False, delay = 0):
 
     r = 63
     img = np.uint8(img/r) * r
+
+    if PRINT_RESULT:print_result(img)
+
     
     not_colored = []
     for py in range(0, height):
-        if show_progress:
-            if py % int(height/10) == 0: 
-                linha_horizontal(img, Ponto(0, py), show_progress, delay)
-                # show_img(img, "progress", delay)
-            # if py % 30 == 0: show_img(img, "progress", delay)
+
+        if show_progress and py % int(height/10) == 0: 
+            linha_horizontal(img, Ponto(0, py), show_progress, delay)
+
         for px in range(0,  width):
             if img[py][px] >= 200:  img[py][px] = 255
             elif img[py][px] <= 50:  img[py][px] = 0
@@ -311,6 +363,8 @@ def satura(img, show_progress = False, delay = 0):
     if show_progress: 
         print("IMAGEM SATURADA")
         show_img(img, "progress")
+
+    if PRINT_RESULT:print_result(img)
 
     return img
                         
@@ -573,7 +627,6 @@ def verifica_pixel_valido(img1, img2, py, px):
     return False
     pass
 
-
 def compara_img(img1, img2, show_progress, delay):
     h,  w  = img1.shape[:2]
     img2 = cv2.resize(img2, (w, h), interpolation= cv2.INTER_AREA)
@@ -582,24 +635,26 @@ def compara_img(img1, img2, show_progress, delay):
     result = get_empty_img(img1)
 
     for y in range(h):
-        if y % int(h/30) == 0: linha_horizontal(result, Ponto(0, y), show_progress, delay)
+        if y % int(h/20) == 0 and show_progress: 
+            linha_horizontal(result, Ponto(0, y), show_progress, delay)
+            if PRINT_RESULT:print_result(result)
+        
         for x in range(w):
             
             try:
                 if img1[y][x] == 255 and img2[y][x] == 255: continue            
-                elif img1[y][x] < 255 and img2[y][x] < 255: result[y][x] = [0,255,0]
+                elif img1[y][x] < 255 and img2[y][x] < 255: result[y][x] = GREEN
                 else: 
-                    
-                    if verifica_pixel_valido(img1, img2, y, x): result[y][x] = [0,0,0]
-                    else: result[y][x] = [0,0,255]
+                    if verifica_pixel_valido(img1, img2, y, x): result[y][x] = BLACK
+                    else: result[y][x] = BLUE
             except:
-                result[y][x] = [255,0,0]
-                
-            
+                result[y][x] = WHITE
+
+    if PRINT_RESULT:print_result(result)
+
     show_img(result,'progress')
     cv2.imwrite("Result2.png", result)
-
-
+    return result
 
 def ajusta_imagem(img, show_progress = False, delay = 0):
     img = satura(img, show_progress, delay)
@@ -614,7 +669,107 @@ def ajusta_imagem(img, show_progress = False, delay = 0):
         print("ERROR AJUSTA IMAGEM CONVERTER PARA GRAY")
         return img
 
-def start():
+def verif_cor_pixel(pixel, color):
+    for i in range(len(pixel)):
+        if pixel[i] != color[i]: return False
+    return True
+
+def checa_validadae_erro(img, py, px):
+    #   pixel de erro 2x2
+    tam_pixel_erro = 2
+    
+    for y in range(py, py+tam_pixel_erro):
+        for x in range(px, px+tam_pixel_erro):
+            if not verif_cor_pixel(img[y][x], BLUE): return False
+    return True
+
+def limpa_falso_positivo(img, show_progress, delay):
+    """
+    @return a list of points that possibly have errors
+
+    """
+    
+    pontos = []
+    h, w = img.shape[:2]
+    for y in range(h):
+        if show_progress and y % 50 == 0: 
+            show_img(img, "progress", delay)
+            if PRINT_RESULT:print_result(img)
+        for x in range(w):
+            if verif_cor_pixel(img[y][x], BLUE):
+                if checa_validadae_erro(img, y, x):
+                    pontos.append(Ponto(x,y))
+                    for py in range(y, y+3):
+                        for px in range(x, x+3):
+                            img[py][px] = RED
+                    if show_progress: 
+                        show_img(img, "progress", delay)
+    if show_progress: show_img(img, "progress")
+    if PRINT_RESULT:print_result(img)
+    cv2.imwrite("Result_Erros.png", img)
+    return pontos
+
+def remove_pontos_proximos( pontos, delete_range=40):
+    # print(len(pontos))
+    
+    result = []
+    
+    
+    pontos.reverse()
+    result.append(pontos.pop())
+
+    while len(pontos) > 0:
+        ponto = pontos.pop()
+        
+        y = result[-1].y
+        x = result[-1].x
+        
+        if ponto.x > x and ponto.x < x + delete_range or ponto.y > y and ponto.y < y + delete_range: continue
+
+        result.append(ponto)
+    # print(len(result))
+    return result
+
+def pergunta_yes_no(titulo, texto):
+    msg = tk.messagebox.askquestion(titulo, texto, icon="warning")
+    if msg == 'yes': 
+        return True
+    else: 
+        return False
+        
+    
+    # root.mainloop()
+
+
+def junta_tres_imagens(img1, img2, img3):
+    h1, w1 = img1.shape[:2]
+    h2, w2 = img2.shape[:2]
+    h3, w3 = img3.shape[:2]
+
+    result = get_empty_img(img1, h1, w1+w2+w3)
+
+    img1 = copia_colorida(img1)
+    img2 = copia_colorida(img2)
+    img3 = copia_colorida(img3)
+
+    for y in range(h1):
+        for x in range(w1):
+            
+            result[y][x] = img1[y][x]
+
+    for y in range(h2):
+        for x in range(w2):
+            
+            result[y][x + w1] = img2[y][x]
+    for y in range(h3):
+        for x in range(w3):
+            result[y][x + w1 + w2] = img3[y][x]
+            
+    return result
+
+
+def start(index_base = 0, index_def = 0):
+
     path, dirs, files = next(os.walk("./bases"))
     print(path, dirs)
 
@@ -630,13 +785,64 @@ def start():
     dir_name = dirs[dir_index] + "/"
     bases    = carrega_img_base(dir_name)
     defeitos = carrega_img_def(dir_name)
-    img_base = bases[1]
-    img_def  = defeitos[3]
+    # img_base = bases[1]
+    # img_def  = defeitos[2]
+
+    
+    
+    # img_base = bases[index_base]
+    # img_def  = defeitos[index_def]
+
+    img_base = copia_escala_cinza(bases[index_base])
+    img_def = copia_escala_cinza(defeitos[index_def])
+
+
+    # show_img(junta_tres_imagens(zoom_img(img_base, 1000, 1100), zoom_img(img_def, 1100, 1100), zoom_img(img_base, 900, 900)))
+
+
     # img_def  = defeitos[6]
     # img_def  = defeitos[3]
     img_def  = ajusta_imagem(img_def, True, 3)
+    print("IMAGEM AJUSTADA")
     img_base = ajusta_imagem(img_base, True, 3)
+    print("IMAGEM AJUSTADA")
     
-    compara_img(img_base, img_def, True, 3)
-    
+    result = compara_img(img_base, img_def, True, 3)
+    print("COMPARACAO FEITA")
+    erros = limpa_falso_positivo(result, True, 3)        
+    print("ERROS DETECTADOS")
+
+    erros = remove_pontos_proximos(erros)
+
+    erros_confirmados = []
+
+    root = tk.Tk()
+    S = tk.Scrollbar(root)
+    T = tk.Text(root, height=4, width=50)
+    S.pack(   side=tk.RIGHT, fill=tk.Y)
+    T.pack(   side=tk.LEFT, fill=tk.Y)
+    S.config( command=T.yview)
+    T.config( yscrollcommand=S.set)
+    quote = "Verificando Similaridade de Imagens."
+    T.insert(tk.END, quote)
+    for ponto in erros:
+
+        z1 = zoom_img(bases[index_base], ponto.y, ponto.x, delay=1, name="Original")
+        z2 = zoom_img(defeitos[index_def] , ponto.y, ponto.x, delay=1, name="Comparativo")
+        z3 = zoom_img(result , ponto.y, ponto.x, delay=1, name="Localizacao")
+        
+        zz = junta_tres_imagens(z1,z2,z3)
+        # show_img(zz, 'ZOOM MASTER')
+        if PRINT_RESULT: print_result(zz)
+
+        if pergunta_yes_no("São iguais", "Tem erros na imagem?"): 
+            erros_confirmados.append(ponto)
+
+
+    root.mainloop()
+
+    result = circula_pontos(img_def, erros_confirmados, tamanho=60)
+    cv2.imwrite("Resultado_final.png", result)
+    show_img(result, "progress", 0)
+
 start()
