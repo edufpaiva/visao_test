@@ -10,6 +10,8 @@
 '''
 import os
 from os import system
+import subprocess
+
 system("cls")
 
 import cv2
@@ -18,6 +20,8 @@ import math
 
 import tkinter as tk
 from tkinter import messagebox
+
+from datetime import datetime
 
 PATH_BASE = "./bases/01 - completo/"
 PATH_DEF = "./defeitos/01 - completo/"
@@ -28,13 +32,17 @@ INDEX_DEF = 1
 RESIZE = 30
 # RESIZE = 100
 BLUE    = [255,  0 ,  0 ]
-GREEN   = [ 0 , 255,  0 ]
+GREEN   = [150, 255, 150]
 RED     = [ 0 ,  0 , 255]
 BLACK   = [ 0 ,  0 ,  0 ]
+PINK    = [219, 203, 255]
 WHITE   = [255, 255, 255]
+YELLOW  = [ 0 , 215, 255]
 
 PRINT_RESULT = False
 PRINT_COUNT = 1
+
+PATH = "Resultado-%02d-%02d-%04d-%02d%02d%02d" % (datetime.now().day, datetime.now().month, datetime.now().year, datetime.now().hour, datetime.now().minute, datetime.now().second)
 
 class Ponto:
     def __init__(self, x, y):
@@ -172,7 +180,7 @@ def mostra_pontos(img, pontos, delay=0):
     show_img(color, "progress", delay)
     return color
 
-def circula_pontos(img, pontos, delay=0, tamanho = 4):
+def circula_pontos(img, pontos, delay=0, tamanho = 4, expessura = 1):
     height, width = img.shape[:2]
     color =  copia_colorida(img)
 
@@ -185,18 +193,15 @@ def circula_pontos(img, pontos, delay=0, tamanho = 4):
         if x2 > width: x2 = width
         if y1 < 0: y1 = 0
         if y2 > height: y2 = height
-        for x in range(x1, x2):
-            color[y1+1][x] = [0, 0, 255]
-            color[y2-1][x] = [0, 0, 255]
-        for y in range(y1, y2):
-            color[y][x1+1] = [0, 0, 255]
-            color[y][x2-1] = [0, 0, 255]
-        for x in range(x1+1, x2-1):
-            color[y1][x] = [0, 0, 255]
-            color[y2][x] = [0, 0, 255]
-        for y in range(y1+1, y2-1):
-            color[y][x1] = [0, 0, 255]
-            color[y][x2] = [0, 0, 255]
+
+        for n in range(expessura):
+
+            for x in range(x1+n, x2-n):
+                color[y1+n][x] = [0, 0, 255]
+                color[y2-n][x] = [0, 0, 255]
+            for y in range(y1+n, y2-n):
+                color[y][x1+n] = [0, 0, 255]
+                color[y][x2-n] = [0, 0, 255]
         
 
     # show_img(color, "progress", delay)
@@ -631,6 +636,7 @@ def compara_img(img1, img2, show_progress, delay):
     h,  w  = img1.shape[:2]
     img2 = cv2.resize(img2, (w, h), interpolation= cv2.INTER_AREA)
 
+    pontos = []
     # result = copia_colorida(img1)
     result = get_empty_img(img1)
 
@@ -646,7 +652,9 @@ def compara_img(img1, img2, show_progress, delay):
                 elif img1[y][x] < 255 and img2[y][x] < 255: result[y][x] = GREEN
                 else: 
                     if verifica_pixel_valido(img1, img2, y, x): result[y][x] = BLACK
-                    else: result[y][x] = BLUE
+                    else: 
+                        result[y][x] = BLUE
+                        pontos.append(Ponto(x, y))
             except:
                 result[y][x] = WHITE
 
@@ -711,7 +719,7 @@ def limpa_falso_positivo(img, show_progress, delay):
 
 def remove_pontos_proximos( pontos, delete_range=40):
     # print(len(pontos))
-    
+    if len(pontos) == 0: return pontos
     result = []
     
     
@@ -841,8 +849,13 @@ def start(index_base = 0, index_def = 0):
 
     root.mainloop()
 
-    result = circula_pontos(img_def, erros_confirmados, tamanho=60)
-    cv2.imwrite("Resultado_final.png", result)
+    result = circula_pontos(img_def, erros_confirmados, tamanho=60, expessura=5)
+
     show_img(result, "progress", 0)
+    system('mkdir ' + PATH)
+    cv2.imwrite("%s/Resultado_final.png" %(PATH), result)
+
 
 start()
+subprocess.Popen('explorer "%s"' %(PATH))
+
