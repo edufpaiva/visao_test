@@ -647,10 +647,8 @@ def propaga(img1, img2, result, y, x):
 
     try:
         if verif_cor_pixel(result[y][x], RED): 
-            print("VERMELHO")
             return 0
         if verif_cor_pixel(result[y][x], BLUE): 
-            print("AZUL")
             return 0
         if img1[y][x] == 255 and img2[y][x] == 255: return 0            
         elif img1[y][x] < 255 and img2[y][x] < 255: return 0
@@ -693,6 +691,20 @@ def verifica_linha(img, y, x):
         pass
 
     if ver >= 3: return True
+    ver = 0
+    
+
+    try:
+        if     verif_cor_pixel(img[y][x], BLUE)   and verif_cor_pixel(img[y][x+1], BLUE) and not verif_cor_pixel(img[y][x+2], BLUE): ver +=1
+        if not verif_cor_pixel(img[y+1][x], BLUE) and verif_cor_pixel(img[y][x+1], BLUE) and not verif_cor_pixel(img[y][x+2], BLUE): ver +=1
+        if not verif_cor_pixel(img[y+2][x], BLUE) and verif_cor_pixel(img[y][x+1], BLUE) and not verif_cor_pixel(img[y][x+2], BLUE): ver +=1
+        if not verif_cor_pixel(img[y+3][x], BLUE) and verif_cor_pixel(img[y][x+1], BLUE) and not verif_cor_pixel(img[y][x+2], BLUE): ver +=1
+        if not verif_cor_pixel(img[y+4][x], BLUE) and verif_cor_pixel(img[y][x+1], BLUE) and not verif_cor_pixel(img[y][x+2], BLUE): ver +=1
+    except:
+        pass
+
+    if ver >= 3: return True
+    ver = 0
 
     try:
         if not verif_cor_pixel(img[y-1][x], BLUE) and verif_cor_pixel(img[y][x], BLUE) and not verif_cor_pixel(img[y+1][x], BLUE)  : hor +=1
@@ -704,6 +716,7 @@ def verifica_linha(img, y, x):
         pass
     
     if hor >= 3: return True
+    hor = 0
 
     return False
 
@@ -748,7 +761,7 @@ def compara_img(img1, img2, show_progress, delay):
 
 def ajusta_imagem(img, show_progress = False, delay = 0):
     img = satura(img, show_progress, delay)
-    remove_pixel_isolado(img, show_progress, delay)
+    # remove_pixel_isolado(img, show_progress, delay)
     # img = remove_bordas(img, show_progress, delay)
     # img = ajusta_angulo(img, show_progress, delay)
     show_img(img, "progress", delay)
@@ -919,7 +932,7 @@ def start(index_base = 0, index_def = 0):
     quote = "Verificando Similaridade de Imagens."
     T.insert(tk.END, quote)
     for ponto in erros:
-
+        
         z1 = zoom_img(bases[index_base], ponto.y, ponto.x, delay=1, name="Original")
         z2 = zoom_img(defeitos[index_def] , ponto.y, ponto.x, delay=1, name="Comparativo")
         z3 = zoom_img(result , ponto.y, ponto.x, delay=1, name="Localizacao")
