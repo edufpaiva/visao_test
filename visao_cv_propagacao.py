@@ -215,7 +215,7 @@ def linha_vertical(img, ponto, show_progress = False, delay = 0):
         color[y][ponto.x] = [0, 255, 0]
         if show_progress and y % int(height/10) == 0: show_img(color, "progress", delay)
     
-    # show_img(color, "progress")
+    show_img(color, "progress", 3)
     if PRINT_RESULT:print_result(color)
 
     return color
@@ -228,7 +228,7 @@ def linha_horizontal(img, ponto, show_progress = False, delay = 0):
         color[ponto.y][x] = [255, 0, 0]
         if show_progress and x % int(width/10) == 0: show_img(color, "progress", delay)
     
-    # show_img(color, "progress")
+    show_img(color, "progress", 3)
 
     if PRINT_RESULT:print_result(color)
 
@@ -521,28 +521,37 @@ def remove_pixel_isolado(img, show_progress = False, delay = 0):
 
     for x in range(1, w -1):
         
-        if show_line  and x % int(w/20) == 0: linha_vertical(img, Ponto(x,0), show_line, delay)
+        if show_line  and x % int(w/20) == 0: linha_vertical(img, Ponto(x,0), False, 3)
         
         for y in range(1, h -1):
-            if img[y-1][x] == 255 and img[y][x] != 255 and img[y+1][x] == 255:
-                if verifica_relevancia_do_pixel(img, Ponto(x, y), show_progress, delay):
-                    img[y][x] = 255
-                    if show_progress: show_img(circula_pontos(img, [Ponto(x, y)]), "progress", delay_erro)
-                    
-            if img[y][x-1] == 255 and img[y][x] != 255 and img[y][x+1] == 255:
-                if verifica_relevancia_do_pixel(img, Ponto(x, y), show_progress, delay):
-                    img[y][x] = 255
-                    if show_progress: show_img(circula_pontos(img, [Ponto(x, y)]), "progress", delay_erro)
-                    
-            if img[y-1][x] == 255 and img[y][x] != 255 and img[y+1][x] != 255 and img[y+2][x] == 255:
-                if verifica_relevancia_do_pixel(img, Ponto(x, y), show_progress, delay):
-                    img[y][x] = 255
-                    if show_progress: show_img(circula_pontos(img, [Ponto(x, y)]), "progress", delay_erro)
-
-            if img[y][x-1] == 255 and img[y][x] != 255 and img[y][x+1] != 255 and img[y][x+2] == 255:
-                if verifica_relevancia_do_pixel(img, Ponto(x, y), show_progress, delay):
-                    img[y][x] = 255
-                    if show_progress: show_img(circula_pontos(img, [Ponto(x, y)]), "progress", delay_erro)
+            try:
+                if img[y-1][x] == 255 and img[y][x] != 255 and img[y+1][x] == 255:
+                    if verifica_relevancia_do_pixel(img, Ponto(x, y), show_progress, delay):
+                        img[y][x] = 255
+                        if show_progress: show_img(circula_pontos(img, [Ponto(x, y)]), "progress", delay_erro)
+            except:
+                pass
+            try:    
+                if img[y][x-1] == 255 and img[y][x] != 255 and img[y][x+1] == 255:
+                    if verifica_relevancia_do_pixel(img, Ponto(x, y), show_progress, delay):
+                        img[y][x] = 255
+                        if show_progress: show_img(circula_pontos(img, [Ponto(x, y)]), "progress", delay_erro)
+            except:
+                pass
+            try:
+                if img[y-1][x] == 255 and img[y][x] != 255 and img[y+1][x] != 255 and img[y+2][x] == 255:
+                    if verifica_relevancia_do_pixel(img, Ponto(x, y), show_progress, delay):
+                        img[y][x] = 255
+                        if show_progress: show_img(circula_pontos(img, [Ponto(x, y)]), "progress", delay_erro)
+            except:
+                pass
+            try:
+                if img[y][x-1] == 255 and img[y][x] != 255 and img[y][x+1] != 255 and img[y][x+2] == 255:
+                    if verifica_relevancia_do_pixel(img, Ponto(x, y), show_progress, delay):
+                        img[y][x] = 255
+                        if show_progress: show_img(circula_pontos(img, [Ponto(x, y)]), "progress", delay_erro)
+            except:
+                pass
                     
 def ajusta_angulo(img, show_progress = False, delay = 0):
     h, w = img.shape[:2]
@@ -668,6 +677,35 @@ def pinta_pixel_proximos(img, y, x, color):
         if y - 1 > 0: cima      = pinta_pixel_proximos(img, y - 1, x, RED)
         if y + 1 < h: baixo     = pinta_pixel_proximos(img, y + 1, x, RED)
     
+def verifica_linha(img, y, x):
+    hor = 0
+    ver = 0
+    
+    h, w = img.shape[:2]
+
+    try:
+        if not verif_cor_pixel(img[y][x-1], BLUE) and verif_cor_pixel(img[y][x], BLUE) and not verif_cor_pixel(img[y][x+1], BLUE)  : ver +=1
+        if not verif_cor_pixel(img[y][x-1], BLUE) and verif_cor_pixel(img[y+1][x], BLUE) and not verif_cor_pixel(img[y][x+1], BLUE): ver +=1
+        if not verif_cor_pixel(img[y][x-1], BLUE) and verif_cor_pixel(img[y+2][x], BLUE) and not verif_cor_pixel(img[y][x+1], BLUE): ver +=1
+        if not verif_cor_pixel(img[y][x-1], BLUE) and verif_cor_pixel(img[y+3][x], BLUE) and not verif_cor_pixel(img[y][x+1], BLUE): ver +=1
+        if not verif_cor_pixel(img[y][x-1], BLUE) and verif_cor_pixel(img[y+4][x], BLUE) and not verif_cor_pixel(img[y][x+1], BLUE): ver +=1
+    except:
+        pass
+
+    if ver >= 3: return True
+
+    try:
+        if not verif_cor_pixel(img[y-1][x], BLUE) and verif_cor_pixel(img[y][x], BLUE) and not verif_cor_pixel(img[y+1][x], BLUE)  : hor +=1
+        if not verif_cor_pixel(img[y-1][x], BLUE) and verif_cor_pixel(img[y][x+1], BLUE) and not verif_cor_pixel(img[y+1][x], BLUE): hor +=1
+        if not verif_cor_pixel(img[y-1][x], BLUE) and verif_cor_pixel(img[y][x+2], BLUE) and not verif_cor_pixel(img[y+1][x], BLUE): hor +=1
+        if not verif_cor_pixel(img[y-1][x], BLUE) and verif_cor_pixel(img[y][x+3], BLUE) and not verif_cor_pixel(img[y+1][x], BLUE): hor +=1
+        if not verif_cor_pixel(img[y-1][x], BLUE) and verif_cor_pixel(img[y][x+4], BLUE) and not verif_cor_pixel(img[y+1][x], BLUE): hor +=1
+    except:
+        pass
+    
+    if hor >= 3: return True
+
+    return False
 
 def compara_img(img1, img2, show_progress, delay):
     h,  w  = img1.shape[:2]
@@ -689,27 +727,28 @@ def compara_img(img1, img2, show_progress, delay):
                 elif img1[y][x] < 255 and img2[y][x] < 255: result[y][x] = GREEN
                 else: 
                     if verifica_pixel_valido(img1, img2, y, x): result[y][x] = BLACK
-                    else: 
+                    else:
+                        if verif_cor_pixel(result[y][x], RED): continue
                         error = propaga(img1, img2, result, y, x)
-                        if error > 3: 
-                            pinta_pixel_proximos(result, y, x, RED)
-                            if show_progress: show_img(result, "progress", 1)
-                        
-
-                        
-                        
+                        if error > 3:
+                            if not verifica_linha(result, y, x):
+                                pinta_pixel_proximos(result, y, x, RED)
+                                if show_progress: show_img(result, "progress", 1)
+                                pontos.append(Ponto(x, y))
             except:
                 result[y][x] = WHITE
 
     if PRINT_RESULT:print_result(result)
 
     show_img(result,'progress')
-    cv2.imwrite("Result2.png", result)
-    return result
+    # cv2.imwrite("Result2.png", result)
+    cv2.imwrite("%s/Comparacao.png" %(PATH), result)
+
+    return {"pontos":pontos, "result":result}
 
 def ajusta_imagem(img, show_progress = False, delay = 0):
     img = satura(img, show_progress, delay)
-    # remove_pixel_isolado(img, show_progress, delay)
+    remove_pixel_isolado(img, show_progress, delay)
     # img = remove_bordas(img, show_progress, delay)
     # img = ajusta_angulo(img, show_progress, delay)
     show_img(img, "progress", delay)
@@ -839,8 +878,6 @@ def start(index_base = 0, index_def = 0):
     # img_base = bases[1]
     # img_def  = defeitos[2]
 
-    
-    
     # img_base = bases[index_base]
     # img_def  = defeitos[index_def]
 
@@ -858,12 +895,17 @@ def start(index_base = 0, index_def = 0):
     img_base = ajusta_imagem(img_base, True, 3)
     print("IMAGEM AJUSTADA")
     
-    result = compara_img(img_base, img_def, True, 3)
+    comparacao = compara_img(img_base, img_def, True, 3)
+    
+    erros = comparacao["pontos"]
+    result = comparacao["result"]
+
+
     print("COMPARACAO FEITA")
-    erros = limpa_falso_positivo(result, True, 3)        
+    # erros = limpa_falso_positivo(result, True, 3)        
     print("ERROS DETECTADOS")
 
-    erros = remove_pontos_proximos(erros)
+    # erros = remove_pontos_proximos(erros)
 
     erros_confirmados = []
 
@@ -883,22 +925,21 @@ def start(index_base = 0, index_def = 0):
         z3 = zoom_img(result , ponto.y, ponto.x, delay=1, name="Localizacao")
         
         zz = junta_tres_imagens(z1,z2,z3)
+        cv2.imwrite("%s/erro_%s_%s.png" %(PATH, ponto.x, ponto.y), zz)
+
         # show_img(zz, 'ZOOM MASTER')
         if PRINT_RESULT: print_result(zz)
 
         if pergunta_yes_no("São iguais", "Tem erros na imagem?"): 
             erros_confirmados.append(ponto)
 
-
     root.mainloop()
 
     result = circula_pontos(img_def, erros_confirmados, tamanho=60, expessura=5)
 
     show_img(result, "progress", 0)
-    system('mkdir ' + PATH)
     cv2.imwrite("%s/Resultado_final.png" %(PATH), result)
 
-
+system('mkdir ' + PATH)
 start()
 subprocess.Popen('explorer "%s"' %(PATH))
-
