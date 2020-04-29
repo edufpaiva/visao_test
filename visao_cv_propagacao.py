@@ -387,13 +387,13 @@ def get_pixel_mais_a_direita(img:img)->Ponto:
 
 def remove_bordas(img:img, show_progress:bool = False, delay:int = 0)->int:
     """
-        Remove os espacos em branco ao redor da imagem.
-        @param img: cv2 img
-            Imagem para ser removido as bordas.
-        @param show_progress:bool
-            Se verdadeiro mostra o processo de remocao das bordas.
-        @param delay:int
-            Tempo que cada imagem aparece na tela em milissegundos
+        Remove os espacos em branco ao redor da imagem.\n
+        @param img: cv2 img\n
+            \tImagem para ser removido as bordas.\n
+        @param show_progress:bool\n
+            \tSe verdadeiro mostra o processo de remocao das bordas.\n
+        @param delay:int\n
+            \tTempo que cada imagem aparece na tela em milissegundos\n
     """
     height, width = img.shape[:2]
 
@@ -517,7 +517,7 @@ def satura(img:img, show_progress:bool = False, delay:int = 0)->int:
 
     return img
                         
-def verifica_relevancia_do_pixel(img, ponto, show_progress, delay):
+def verifica_relevancia_do_pixel(img:img, ponto:Ponto, show_progress:bool=False, delay:int=1)->bool:
     tam = 50
     height, width = img.shape[:2]
     if show_progress:
