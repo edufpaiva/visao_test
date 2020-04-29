@@ -446,7 +446,18 @@ def remove_bordas(img, show_progress = False, delay = 0):
         print("ERROR AJUSTA IMAGEM CONVERTER PARA GRAY")
         return copy
     
-def satura(img, show_progress = False, delay = 0):
+def satura(img:img, show_progress:bool = False, delay:int = 0)->int:
+    """
+        Ajusta as cores da imagem para especificos tons de preto cinza e branco
+        tornando-os padroes. \n
+        (0, 100, 150, 255).\n
+        @param img:img\n
+            \tImagem a ser saturada.\n
+        @param show_progress:bool\n
+            \tSe verdadeiro mostra o processo de saturacao da imagem.\n
+        @param delay:int\n
+            \tTempo em que cada imagem sera exibida na tela em milissegundos.\n
+    """
     height, width = img.shape[:2]
     
     if show_progress: 
