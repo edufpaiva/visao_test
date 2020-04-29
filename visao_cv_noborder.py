@@ -477,11 +477,24 @@ def remove_bordas(img:img, show_progress:bool = False, delay:int = 0)->int:
         print("ERROR AJUSTA IMAGEM CONVERTER PARA GRAY")
         return copy
     
-def satura(img, show_progress = False, delay = 0):
+def satura_img(img:img, show_progress:bool = False, delay:int = 0)->int:
+    """
+        Ajusta as cores da imagem para especificos tons de preto cinza e branco
+        tornando-os padroes. \n
+        (0, 100, 150, 255).\n
+        @param img:img\n
+            \tImagem a ser saturada.\n
+        @param show_progress:bool\n
+            \tSe verdadeiro mostra o processo de saturacao da imagem.\n
+        @param delay:int\n
+            \tTempo em que cada imagem sera exibida na tela em milissegundos.\n
+    """
+
+
     height, width = img.shape[:2]
     
     if show_progress: 
-        show_img(img, "progress")
+        show_img(img, "progress", delay)
         print("SATURANDO IMAGEM")
 
 
@@ -820,7 +833,7 @@ def compara_img(img1, img2, show_progress, delay):
     return result
 
 def ajusta_imagem(img, show_progress = False, delay = 0):
-    img = satura(img, show_progress, delay)
+    img = satura_img(img, show_progress, delay)
     # remove_pixel_isolado(img, show_progress, delay)
     # img = remove_bordas(img, show_progress, delay)
     # img = ajusta_angulo(img, show_progress, delay)
