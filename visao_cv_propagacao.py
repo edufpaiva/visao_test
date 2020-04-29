@@ -239,15 +239,30 @@ def show_img(img:img, name:str='image', delay:int = 0, height:int=640, width:int
     if delay == 0: print("============================\n\tpress enter\n============================\n")
     cv2.waitKey(delay)
 
-def circula_pontos(img, pontos, delay=0, tamanho = 4, expessura = 1):
+def contorna_pontos(img:img, pontos:list, distancia:int = 2, expessura:int = 2, color:int=RED):
+    """
+        Contorna pontos na imagem.\n
+        @param img: cv2 image\n
+            \tImagem em que o pontos serao contornados.\n
+        @param pontos: Ponto[]\n
+            \tPontos a serem circulados na imagem.\n
+        @param distancia: int\n
+            \tDistancia do contorno ao ponto central em pixels.\n
+        @param expessura: int\n
+            \tExpessura do contorno em pixels.\n
+        @param color: int[3] | int[4].\n
+            \tCor do contorno\n
+    """
+
+    
     height, width = img.shape[:2]
     color =  copia_colorida(img)
 
     for ponto in pontos:
-        x1 = ponto.x - tamanho
-        x2 = ponto.x + tamanho + 1
-        y1 = ponto.y - tamanho
-        y2 = ponto.y + tamanho + 1
+        x1 = ponto.x - distancia
+        x2 = ponto.x + distancia + 1
+        y1 = ponto.y - distancia
+        y2 = ponto.y + distancia + 1
         if x1 < 0: x1 = 0
         if x2 > width: x2 = width
         if y1 < 0: y1 = 0
@@ -256,14 +271,13 @@ def circula_pontos(img, pontos, delay=0, tamanho = 4, expessura = 1):
         for n in range(expessura):
 
             for x in range(x1+n, x2-n):
-                color[y1+n][x] = [0, 0, 255]
-                color[y2-n][x] = [0, 0, 255]
+                color[y1+n][x] = color
+                color[y2-n][x] = color
             for y in range(y1+n, y2-n):
-                color[y][x1+n] = [0, 0, 255]
-                color[y][x2-n] = [0, 0, 255]
+                color[y][x1+n] = color
+                color[y][x2-n] = color
         
 
-    # show_img(color, "progress", delay)
     return color
 
 def linha_vertical(img, ponto, show_progress = False, delay = 0):
@@ -334,11 +348,11 @@ def remove_bordas(img, show_progress = False, delay = 0):
     if show_progress:
         print(off_cima.to_string())
         print(off_esquerda.to_string())
-        color = circula_pontos(img, [off_cima, off_esquerda])
+        color = contorna_pontos(img, [off_cima, off_esquerda])
         show_img(color, "progress", delay)
         color = linha_vertical(color, off_esquerda, show_progress, delay)
         color = linha_horizontal(color, off_cima, show_progress, delay)
-        color = circula_pontos(color, [Ponto(off_esquerda.x, off_cima.y)])
+        color = contorna_pontos(color, [Ponto(off_esquerda.x, off_cima.y)])
         show_img(color, "progress", delay)
 
     copy = get_empty_img(height, width, grayscale=True)
@@ -362,11 +376,11 @@ def remove_bordas(img, show_progress = False, delay = 0):
     off_baixo = get_pixel_mais_abaixo(img)
     
     if show_progress:
-        color = circula_pontos(img, [off_direita, off_baixo])
+        color = contorna_pontos(img, [off_direita, off_baixo])
         show_img(color, "progress", delay)
         color = linha_vertical(color, off_direita, show_progress, delay)
         color = linha_horizontal(color, off_baixo, show_progress, delay)
-        color = circula_pontos(color, [Ponto(off_direita.x, off_baixo.y)])
+        color = contorna_pontos(color, [Ponto(off_direita.x, off_baixo.y)])
         show_img(color, "progress", delay)
 
 
@@ -450,8 +464,8 @@ def verifica_relevancia_do_pixel(img, ponto, show_progress, delay):
                 if px >= width or px < 0: continue
                 zoom[y][x] = img[py][px]
 
-        show_img(circula_pontos(img,  [ponto], delay)  , 'progress', delay)
-        show_img(circula_pontos(zoom, [Ponto(int(tam/2), int(tam/2))], delay), 'zoom', delay, tam*6, tam*6)
+        show_img(contorna_pontos(img,  [ponto], delay)  , 'progress', delay)
+        show_img(contorna_pontos(zoom, [Ponto(int(tam/2), int(tam/2))], delay), 'zoom', delay, tam*6, tam*6)
 
     x = ponto.x
     y = ponto.y
@@ -592,28 +606,28 @@ def remove_pixel_isolado(img, show_progress = False, delay = 0):
                 if img[y-1][x] == 255 and img[y][x] != 255 and img[y+1][x] == 255:
                     if verifica_relevancia_do_pixel(img, Ponto(x, y), show_progress, delay):
                         img[y][x] = 255
-                        if show_progress: show_img(circula_pontos(img, [Ponto(x, y)]), "progress", delay_erro)
+                        if show_progress: show_img(contorna_pontos(img, [Ponto(x, y)]), "progress", delay_erro)
             except:
                 pass
             try:    
                 if img[y][x-1] == 255 and img[y][x] != 255 and img[y][x+1] == 255:
                     if verifica_relevancia_do_pixel(img, Ponto(x, y), show_progress, delay):
                         img[y][x] = 255
-                        if show_progress: show_img(circula_pontos(img, [Ponto(x, y)]), "progress", delay_erro)
+                        if show_progress: show_img(contorna_pontos(img, [Ponto(x, y)]), "progress", delay_erro)
             except:
                 pass
             try:
                 if img[y-1][x] == 255 and img[y][x] != 255 and img[y+1][x] != 255 and img[y+2][x] == 255:
                     if verifica_relevancia_do_pixel(img, Ponto(x, y), show_progress, delay):
                         img[y][x] = 255
-                        if show_progress: show_img(circula_pontos(img, [Ponto(x, y)]), "progress", delay_erro)
+                        if show_progress: show_img(contorna_pontos(img, [Ponto(x, y)]), "progress", delay_erro)
             except:
                 pass
             try:
                 if img[y][x-1] == 255 and img[y][x] != 255 and img[y][x+1] != 255 and img[y][x+2] == 255:
                     if verifica_relevancia_do_pixel(img, Ponto(x, y), show_progress, delay):
                         img[y][x] = 255
-                        if show_progress: show_img(circula_pontos(img, [Ponto(x, y)]), "progress", delay_erro)
+                        if show_progress: show_img(contorna_pontos(img, [Ponto(x, y)]), "progress", delay_erro)
             except:
                 pass
                     
@@ -1014,7 +1028,7 @@ def start(index_base = 0, index_def = 0):
 
     root.mainloop()
 
-    result = circula_pontos(img_def, erros_confirmados, tamanho=60, expessura=5)
+    result = contorna_pontos(img_def, erros_confirmados, tamanho=60, expessura=5)
 
     show_img(result, "progress", 0)
     cv2.imwrite("%s/Resultado_final.png" %(PATH), result)
