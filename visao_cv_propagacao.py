@@ -518,6 +518,17 @@ def satura(img:img, show_progress:bool = False, delay:int = 0)->int:
     return img
                         
 def verifica_relevancia_do_pixel(img:img, ponto:Ponto, show_progress:bool=False, delay:int=1)->bool:
+    """
+        Verifica se o pixel e relevante para a composicao da imagem.\n
+        @param img:img\n
+            \tImagem onde o pixem se encontra\n
+        @param pixel:Ponto\n
+            \tCoordenada do pixel.\n
+        @apram show_progress:bool\n
+            \tSe verdadeiro exibe o pixel.\n
+        @param delay:int\n
+            \tTempo em que cada imagem e exibida na telan\n
+    """
     tam = 50
     height, width = img.shape[:2]
     if show_progress:
