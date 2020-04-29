@@ -268,7 +268,7 @@ def show_img(img:img, name:str='image', delay:int = 0, height:int=640, width:int
     if delay == 0: print("============================\n\tpress enter\n============================\n")
     cv2.waitKey(delay)
 
-def contorna_pontos(img:img, pontos:list, distancia:int = 2, expessura:int = 2, color:int=RED):
+def contorna_pontos(img:img, pontos:list, distancia:int = 2, expessura:int = 2, color:list=RED)->int:
     """
         Contorna pontos na imagem.\n
         @param img: cv2 image\n
@@ -306,32 +306,58 @@ def contorna_pontos(img:img, pontos:list, distancia:int = 2, expessura:int = 2, 
 
     return color
 
-def linha_vertical(img, ponto, show_progress = False, delay = 0):
+def linha_vertical(img:img, ponto:Ponto, show_progress:bool = False, delay:int = 0, color:list=GREEN)->int:
+    """
+        Cria uma linha vertical na imagem.\n
+        @param img:\n
+            \tImagem onde sera tracada a linha.\n
+        @param ponto:Ponto\n
+            \tPonto base para a linha ser tracada.\n
+        @param show_progress:bool\n
+            \tSe verdadeiro mostra a linha sendo tracada na imagem.\n
+        @param delay:int\n
+            \tO tempo que cada imagem ficara na tela em milissegundos.\n
+        @param color:list\n
+            \tA cor da linha.\n
+    """
     height, width = img.shape[:2]
-    color = copia_colorida(img)
+    img_color = copia_colorida(img)
 
     for y in range(height):
-        color[y][ponto.x] = [0, 255, 0]
-        if show_progress and y % int(height/10) == 0: show_img(color, "progress", delay)
+        img_color[y][ponto.x] = color
+        if show_progress and y % int(height/10) == 0: show_img(img_color, "progress", delay)
     
-    # show_img(color, "progress")
-    if PRINT_RESULT:print_result(color)
+    if show_progress: show_img(img_color, "progress", delay)
+    if PRINT_RESULT:print_result(img_color)
 
-    return color
+    return img_color
 
-def linha_horizontal(img, ponto, show_progress = False, delay = 0):
+def linha_horizontal(img:img, ponto:Ponto, show_progress:bool = False, delay:int = 0, color:list=YELLOW)->int:
+    """
+        Cria uma linha horizontal na imagem.\n
+        @param img:\n
+            \tImagem onde sera tracada a linha.\n
+        @param ponto:Ponto\n
+            \tPonto base para a linha ser tracada.\n
+        @param show_progress:bool\n
+            \tSe verdadeiro mostra a linha sendo tracada na imagem.\n
+        @param delay:int\n
+            \tO tempo que cada imagem ficara na tela em milissegundos.\n
+        @param color:list\n
+            \tA cor da linha.\n
+    """
     height, width = img.shape[:2]
-    color = copia_colorida(img)
+    img_color = copia_colorida(img)
 
     for x in range(width):
-        color[ponto.y][x] = [255, 0, 0]
-        if show_progress and x % int(width/10) == 0: show_img(color, "progress", delay)
+        img_color[ponto.y][x] = color
+        if show_progress and x % int(width/10) == 0: show_img(img_color, "progress", delay)
     
     # show_img(color, "progress")
 
-    if PRINT_RESULT:print_result(color)
+    if PRINT_RESULT:print_result(img_color)
 
-    return color
+    return img_color
 
 def get_pixel_mais_acima(img):
     height, width = img.shape[:2]
