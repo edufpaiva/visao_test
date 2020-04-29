@@ -190,7 +190,7 @@ def carrega_img_def(dir_name:str)->list:
         imagens.append(cv2.imread(path + file_name, cv2.IMREAD_GRAYSCALE))
     return imagens
 
-def zoom_img(img, ponto, precision = 50)->int:
+def zoom_img(img:img, ponto:Ponto, precision:int = 50)->int:
     """
         Da um zoom em determinado ponto da imagem.\n
         @param img: cv2 img\n
@@ -203,7 +203,7 @@ def zoom_img(img, ponto, precision = 50)->int:
     zoom = get_empty_img(img, precision*2, precision*2)
     h, w = img.shape[:2]
     
-    py, px = ponto.y, ponto,x
+    py, px = ponto.y, ponto.x
 
     py -= precision
     px -= precision
