@@ -190,20 +190,21 @@ def carrega_img_def(dir_name:str)->list:
         imagens.append(cv2.imread(path + file_name, cv2.IMREAD_GRAYSCALE))
     return imagens
 
-def zoom_img(img, py, px, precision = 50)->int:
+def zoom_img(img, ponto, precision = 50)->int:
     """
         Da um zoom em determinado ponto da imagem.\n
         @param img: cv2 img\n
             \tA imagem base para ser dado o zoom\n
-        @param py: int\n
-            \tA coordenada y do pixel\n
-        @param px: int\n
-            \tA coordenada x do pixel\n
+        @param ponto: Ponto\n
+            \tPonto onde sera dado o zoom
         @param precision: int\n
             \tA quantidade de pixels na imagem gerada\n
     """
     zoom = get_empty_img(img, precision*2, precision*2)
     h, w = img.shape[:2]
+    
+    py, px = ponto.y, ponto,x
+
     py -= precision
     px -= precision
 
@@ -339,7 +340,7 @@ def remove_bordas(img, show_progress = False, delay = 0):
         color = linha_horizontal(color, off_cima, show_progress, delay)
         color = mostra_pontos(color, [Ponto(off_esquerda.x, off_cima.y)])
 
-    copy = get_empty_img_grayscale(img)
+    copy = get_empty_img(height, width, grayscale=True)
     copy[:][:] = 255
 
     for y in range(height):
@@ -992,11 +993,13 @@ def start(index_base = 0, index_def = 0):
     T.insert(tk.END, quote)
     for ponto in erros:
         
-        z1 = zoom_img(bases[index_base], ponto.y, ponto.x, delay=1, name="Original")
-        z2 = zoom_img(defeitos[index_def] , ponto.y, ponto.x, delay=1, name="Comparativo")
-        z3 = zoom_img(result , ponto.y, ponto.x, delay=1, name="Localizacao")
+        z1 = zoom_img(bases[index_base], ponto)
+        z2 = zoom_img(defeitos[index_def] , ponto)
+        z3 = zoom_img(result , ponto)
         
         zz = junta_tres_imagens(z1,z2,z3)
+        show_img(zz, "Comparacao", 1, 400, 1200)
+
         cv2.imwrite("%s/erro_%s_%s.png" %(PATH, ponto.x, ponto.y), zz)
 
         # show_img(zz, 'ZOOM MASTER')
