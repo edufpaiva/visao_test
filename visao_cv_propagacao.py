@@ -218,11 +218,23 @@ def zoom_img(img:img, ponto:Ponto, precision:int = 50)->int:
 
     return zoom
 
-def show_img(img, name='image', delay = 0, height=640, width=1024):
+def show_img(img:img, name:str='image', delay:int = 0, height:int=640, width:int=1024):
+    """
+        Exibe uma imagem em tela.\n
+        @param img: cv2 img\n
+            \tImagem a ser exibida na tela.\n
+        @param name: str\n
+            \tTitulo da imagem.\n
+        @param delay: int\n
+            \tTempo que a imagem sera exibida na tela em milissegundos.\n
+            \tSe o valor for '0' aguardara que o usuario pressione uma tecla.\n
+        @param height: int\n
+            \tAltura da imagem.\n
+        @param width: int\n
+            \tLargura da imagem.\n
+    """
     result = img
     
-    # name='image'    #   Comment if u wanto to rename windows
-
     cv2.imshow(name, cv2.resize(result, (width, height), interpolation= cv2.INTER_AREA))
     if delay == 0: print("============================\n\tpress enter\n============================\n")
     cv2.waitKey(delay)
