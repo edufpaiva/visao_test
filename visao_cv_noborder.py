@@ -398,7 +398,12 @@ def get_pixel_mais_a_esquerda(img:img)->Ponto:
         for y in range(height):
             if img[y][x] != 255: return Ponto(x, y)
 
-def get_pixel_mais_a_direita(img):
+def get_pixel_mais_a_direita(img:img)->Ponto:
+    """
+        Enconta o pixel valido mais a direita da imagem.\n
+        @param img: cv2 img\n
+            \tImagem para encontrar o ponto.\n
+    """
     height, width = img.shape[:2]
 
     off_cima = 0
