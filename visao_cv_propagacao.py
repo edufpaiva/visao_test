@@ -333,7 +333,12 @@ def linha_horizontal(img:img, ponto:Ponto, show_progress:bool = False, delay:int
 
     return img_color
 
-def get_pixel_mais_acima(img):
+def get_pixel_mais_acima(img:img)->Ponto:
+    """
+        Enconta o pixel valido mais alto da imagem.\n
+        @param img: cv2 img\n
+            \tImagem para encontrar o ponto.\n
+    """
     height, width = img.shape[:2]
 
     off_cima = 0
