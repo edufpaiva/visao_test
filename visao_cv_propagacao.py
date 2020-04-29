@@ -239,19 +239,6 @@ def show_img(img:img, name:str='image', delay:int = 0, height:int=640, width:int
     if delay == 0: print("============================\n\tpress enter\n============================\n")
     cv2.waitKey(delay)
 
-def mostra_pontos(img, pontos, delay=0):
-    height, width = img.shape[:2]
-    color =  copia_colorida(img)
-
-    for ponto in pontos:
-        for y in range(ponto.y - 2, ponto.y + 3):
-            for x in range(ponto.x - 2, ponto.x + 3):
-                if y >= height or x >= width: continue
-                color[y][x] = [0,0, 255]
-
-    show_img(color, "progress", delay)
-    return color
-
 def circula_pontos(img, pontos, delay=0, tamanho = 4, expessura = 1):
     height, width = img.shape[:2]
     color =  copia_colorida(img)
@@ -347,10 +334,12 @@ def remove_bordas(img, show_progress = False, delay = 0):
     if show_progress:
         print(off_cima.to_string())
         print(off_esquerda.to_string())
-        color = mostra_pontos(img, [off_cima, off_esquerda])
+        color = circula_pontos(img, [off_cima, off_esquerda])
+        show_img(color, "progress", delay)
         color = linha_vertical(color, off_esquerda, show_progress, delay)
         color = linha_horizontal(color, off_cima, show_progress, delay)
-        color = mostra_pontos(color, [Ponto(off_esquerda.x, off_cima.y)])
+        color = circula_pontos(color, [Ponto(off_esquerda.x, off_cima.y)])
+        show_img(color, "progress", delay)
 
     copy = get_empty_img(height, width, grayscale=True)
     copy[:][:] = 255
@@ -373,10 +362,13 @@ def remove_bordas(img, show_progress = False, delay = 0):
     off_baixo = get_pixel_mais_abaixo(img)
     
     if show_progress:
-        color = mostra_pontos(img, [off_direita, off_baixo])
+        color = circula_pontos(img, [off_direita, off_baixo])
+        show_img(color, "progress", delay)
         color = linha_vertical(color, off_direita, show_progress, delay)
         color = linha_horizontal(color, off_baixo, show_progress, delay)
-        color = mostra_pontos(color, [Ponto(off_direita.x, off_baixo.y)])
+        color = circula_pontos(color, [Ponto(off_direita.x, off_baixo.y)])
+        show_img(color, "progress", delay)
+
 
     copy = get_empty_img(img, off_baixo.y, off_direita.x)
 
