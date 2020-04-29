@@ -411,7 +411,17 @@ def get_pixel_mais_a_direita(img:img)->Ponto:
         for y in range(height):
             if img[y][x] != 255: return Ponto(x, y)
 
-def remove_bordas(img, show_progress = False, delay = 0):
+def remove_bordas(img:img, show_progress:bool = False, delay:int = 0)->int:
+    """
+        Remove os espacos em branco ao redor da imagem.
+        @param img: cv2 img
+            Imagem para ser removido as bordas.
+        @param show_progress:bool
+            Se verdadeiro mostra o processo de remocao das bordas.
+        @param delay:int
+            Tempo que cada imagem aparece na tela em milissegundos
+    """
+
     height, width = img.shape[:2]
 
     off_cima = get_pixel_mais_acima(img)
@@ -451,7 +461,7 @@ def remove_bordas(img, show_progress = False, delay = 0):
         color = linha_horizontal(color, off_baixo, show_progress, delay)
         color = contorna_pontos(color, [Ponto(off_direita.x, off_baixo.y)])
 
-    copy = get_empty_img(img, off_baixo.y, off_direita.x)
+    copy = get_empty_img(off_baixo.y, off_direita.x)
 
     h, w = copy.shape[:2]
 
@@ -460,7 +470,7 @@ def remove_bordas(img, show_progress = False, delay = 0):
             copy[y][x] = img[y][x]
     
     if show_progress: show_img(copy, "progress")
-    
+
     try:
         return cv2.cvtColor(copy, cv2.COLOR_RGB2GRAY)
     except:
