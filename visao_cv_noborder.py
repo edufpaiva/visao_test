@@ -39,29 +39,64 @@ PINK    = [219, 203, 255]
 WHITE   = [255, 255, 255]
 YELLOW  = [ 0 , 215, 255]
 
+# IF TRUE, GENERATES IMAGES FROM VARIOUS PARTS OF THE IMAGE TREATMENT PROCESS
 PRINT_RESULT = False
 PRINT_COUNT = 1
 
-PATH = "Resultado-%02d-%02d-%04d-%02d%02d%02d" % (datetime.now().day, datetime.now().month, datetime.now().year, datetime.now().hour, datetime.now().minute, datetime.now().second)
+PATH_T0_SAVE_IMG = "Resultado-%02d-%02d-%04d-%02d%02d%02d" % (datetime.now().day, datetime.now().month, datetime.now().year, datetime.now().hour, datetime.now().minute, datetime.now().second)
 
 class Ponto:
+    """
+        @class - Representa um ponto no plano cartesiano
+    """
     def __init__(self, x, y):
         self.x = x
         self.y = y
     def to_string(self):
+        """
+            Imprime os valores do ponto
+        """
         return("x: %i, y: %i" %(self.x, self.y))
 
-def print_result(img):
-    
+
+def print_result(img:img, name:str="Print", extension:str="png", path:str="Print/"):
+    """
+        Salva uma imagem.\n
+        @param img: cv2 img\n
+            \tImagem para ser salva.\n
+        @param name : str\n
+            \tNome do arquivo.\n
+        @param extension : str\n
+            \tExtensao do arquivo.\n
+        @param path : str\n
+            \tEndereco do diretorio em que o arquivo deve ser salvo.\n
+    """
     global PRINT_COUNT
-    cv2.imwrite("Print/Print-%s.png" %(PRINT_COUNT), img)
+    cv2.imwrite("%s%s-%s.%s" %(path, name, PRINT_COUNT, extension), img)
     PRINT_COUNT += 1
 
-def get_angulo( p2, p1):
-    if p1.x-p2.x == 0: return 0
-    return math.degrees(math.atan((p1.y-p2.y)/(p1.x-p2.x)))
+def get_angulo( p1:Ponto, p2:Ponto)->float:
+    """
+        Calcula o angulo entre dois pontos.\n
+        @param p1: Ponto\n
+            \tPonto 1\n
+        @param p2: Ponto\n
+            \tPonto 2\n
+    """
+    if p2.x-p1.x == 0: return 0
+    return math.degrees(math.atan((p2.y-p1.y)/(p2.x-p1.x)))
 
-def rotate_bound(image, angle):
+def rotate_bound(image, angle:float)->img:
+    """
+    Rotaciona uma imagem sem perda de conteudo.\n
+    @param image: cv2 image\n
+        \tA imagem a ser rotacionada.\n
+    @param angle: float\n
+        \tO angulo em graus que a imagem devera ser rotacionada.
+
+    
+    """
+
     # grab the dimensions of the image and then determine the
     # center
     (h, w) = image.shape[:2]
@@ -81,7 +116,12 @@ def rotate_bound(image, angle):
     # perform the actual rotation and return the image
     return cv2.warpAffine(image, M, (nW, nH))
 
-def get_moda(vet):
+def get_moda(vet:list)->float:
+    """
+        Calcula a moda de uma vetor\n
+        @param vet:list\n
+            \tVetor para ser retirado a moda.\n
+    """
     vet.sort()
     print(vet)
     vet_len = len(vet)
@@ -92,41 +132,47 @@ def get_moda(vet):
     else:
         return vet[int(vet_len/2)]
 
-def get_empty_img(img, height=None, width=None):
-    h_1, w_1 = img.shape[:2]
-    if height != None and width != None:
-        h_1, w_1 = height, width
-    return np.zeros((h_1, w_1, 3), np.uint8)
+def get_empty_img(height:int=400, width:int=400, grayscale:bool=False)->img:
+    """
+    Cria uma imagem vazia\n
+    @param height : int\n
+        \tA altura da imagem.\n
+    @param width : int\n
+        \tA largura da imagem.\n
+    @param grayscale: bool\n
+        \tSe verdadeiro a imagem retornada sera em escala de cinza
+    """
+    if grayscale: return np.zeros((height, width, 1), np.uint8)
+    else: return np.zeros((height, width, 3), np.uint8)
 
-def get_empty_img_grayscale(img, height=None, width=None):
-    h_1, w_1 = img.shape[:2]
-    if height != None and width != None:
-        h_1, w_1 = height, width
-    return np.zeros((h_1, w_1, 1), np.uint8)
-
-def copia_colorida(img):
+def copia_colorida(img:img)->int:
+    """
+    Copia uma imagem e converte para colorida.\n
+    @param img: cv2 image.\n
+        \tImagem para ser copiada e convertida\n
+    """
     try:
-        return cv2.cvtColor(img, cv2.COLOR_GRAY2RGB)
+        return cv2.cvtColor(img.copy(), cv2.COLOR_GRAY2RGB)
     except:
-        h, w = img.shape[:2]
-        copy = get_empty_img(img)
-        for y in range(h):
-            for x in range(w):
-                copy[y][x] = img[y][x]
-        return copy
+        return img.copy()
 
-def copia_escala_cinza(img):
+def copia_escala_cinza(img:img)->int:
+    """
+    Copia uma imagem e converte para escala de cinza.\n
+    @param img: cv2 image.\n
+        \tImagem para ser copiada e convertida\n
+    """
     try:
-        return cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+        return cv2.cvtColor(img.copy(), cv2.COLOR_BGR2GRAY)
     except:
-        h, w = img.shape[:2]
-        copy = get_empty_img_grayscale(img)
-        for y in range(h):
-            for x in range(w):
-                copy[y][x][0] = img[y][x]
-        return copy
+        return img.copy()
 
-def carrega_img_base(dir_name):
+def carrega_img_base(dir_name:str)->list:
+    """
+    Carrega imagen base para a memoria.\n
+    @param dir_name : str\n
+        \tO nome do dirertorio onde estao as imagens.\n
+    """
     path, dirs, files = next(os.walk("./bases/" + dir_name))
     
     imagens = []
@@ -134,14 +180,30 @@ def carrega_img_base(dir_name):
         imagens.append(cv2.imread(path + file_name, cv2.IMREAD_GRAYSCALE))
     return imagens
 
-def carrega_img_def(dir_name):
+def carrega_img_def(dir_name:str)->list:
+    """
+    Carrega imagen de defeito para a memoria.\n
+    @param dir_name : str\n
+        \tO nome do dirertorio onde estao as imagens.\n
+    """
     path, dirs, files = next(os.walk("./defeitos/" + dir_name))
     imagens = []
     for file_name in files:
         imagens.append(cv2.imread(path + file_name, cv2.IMREAD_GRAYSCALE))
     return imagens
 
-def zoom_img(img, py, px, precision = 50, delay=0, name="zoom", width=400, height=400):
+def zoom_img(img, py, px, precision = 50)->int:
+    """
+        Da um zoom em determinado ponto da imagem.\n
+        @param img: cv2 img\n
+            \tA imagem base para ser dado o zoom\n
+        @param py: int\n
+            \tA coordenada y do pixel\n
+        @param px: int\n
+            \tA coordenada x do pixel\n
+        @param precision: int\n
+            \tA quantidade de pixels na imagem gerada\n
+    """
     zoom = get_empty_img(img, precision*2, precision*2)
     h, w = img.shape[:2]
     py -= precision
@@ -155,7 +217,6 @@ def zoom_img(img, py, px, precision = 50, delay=0, name="zoom", width=400, heigh
             if px + x >= w: continue
             zoom[y][x] = img[py + y][px + x]
 
-    show_img(zoom, name, delay, height, width)
     return zoom
 
 def show_img(img, name='image', delay = 0, height=640, width=1024):
@@ -852,10 +913,10 @@ def start(index_base = 0, index_def = 0):
     result = circula_pontos(img_def, erros_confirmados, tamanho=60, expessura=5)
 
     show_img(result, "progress", 0)
-    system('mkdir ' + PATH)
-    cv2.imwrite("%s/Resultado_final.png" %(PATH), result)
+    system('mkdir ' + PATH_T0_SAVE_IMG)
+    cv2.imwrite("%s/Resultado_final.png" %(PATH_T0_SAVE_IMG), result)
 
 
 start()
-subprocess.Popen('explorer "%s"' %(PATH))
+subprocess.Popen('explorer "%s"' %(PATH_T0_SAVE_IMG))
 
