@@ -424,7 +424,7 @@ def remove_bordas(img:img, show_progress:bool = False, delay:int = 0)->int:
 
             copy[y][x] = img[py][px]
     
-    if show_progress: show_img(copy, "progress")
+    if show_progress: show_img(copy, "progress", delay)
     img = copy
 
     off_direita = get_pixel_mais_a_direita(img)
@@ -439,7 +439,7 @@ def remove_bordas(img:img, show_progress:bool = False, delay:int = 0)->int:
         show_img(color, "progress", delay)
 
 
-    copy = get_empty_img(img, off_baixo.y, off_direita.x)
+    copy = get_empty_img(off_baixo.y, off_direita.x)
 
     h, w = copy.shape[:2]
 
