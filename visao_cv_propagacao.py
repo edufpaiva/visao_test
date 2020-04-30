@@ -1003,7 +1003,15 @@ def ajusta_imagem(img, show_progress:bool = False, delay:int = 0)->int:
         print("ERROR AJUSTA IMAGEM CONVERTER PARA GRAY")
         return img
 
-def verif_cor_pixel(pixel, color):
+def verif_cor_pixel(pixel:list, color:list)->bool:
+    """
+        Verifica a cor do pixel e a mesma que a cor passada.\n
+        @param pixel: list\n
+            \tPixel para verificar a cor.\n
+        @param color: list\n
+            \tCor base para verificacao do pixel.\n
+    """
+    
     for i in range(len(pixel)):
         if pixel[i] != color[i]: return False
     return True
