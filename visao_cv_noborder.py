@@ -651,8 +651,16 @@ def verifica_relevancia_do_pixel(img:img, ponto:Ponto, show_progress:bool=False,
     return False
     pass
 
-def remove_pixel_isolado(img:img, show_progress:bool = False, delay:int = 0):
-    n_img = img.copy()
+def remove_pixel_isolado(img:img, show_progress:bool = False, delay:int = 0)->None:
+    """
+        Remove pixels de sujeira da imagem.\n
+        @param img:cv2 img\n
+            \tA imagem a ser limpa\n
+        @apram show_progress:bool\n
+            \tSe verdadeiro exibe o processo.\n
+        @param delay:int\n
+            \tTempo em que cada imagem e exibida na tela\n
+    """
     h, w = img.shape[:2]
 
     delay_erro = delay
