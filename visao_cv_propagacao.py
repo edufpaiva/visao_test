@@ -973,8 +973,7 @@ def compara_img(img1, img2, show_progress:bool, delay:int)->dict:
 
     if PRINT_RESULT:print_result(result)
 
-    show_img(result,'progress')
-    # cv2.imwrite("Result2.png", result)
+    if show_progress: show_img(result,'progress', delay)
     cv2.imwrite("%s/Comparacao.png" %(PATH), result)
 
     return {"pontos":pontos, "result":result}
