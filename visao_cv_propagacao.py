@@ -1051,7 +1051,7 @@ def limpa_falso_positivo(img, show_progress:bool, delay:int)->list:
     @return a list of points that possibly have errors\n
 
     """
-    
+    #!  MUDAR METODO PARA ACHAR OS PONTOS DE ERRO DIRETAMENTE 
     pontos = []
     h, w = img.shape[:2]
     for y in range(h):
