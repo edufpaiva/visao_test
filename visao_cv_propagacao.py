@@ -143,7 +143,7 @@ def get_empty_img(height:int=400, width:int=400, grayscale:bool=False)->int:
     if grayscale: return np.zeros((height, width, 1), np.uint8)
     else: return np.zeros((height, width, 3), np.uint8)
 
-def copia_colorida(img:img)->int:
+def copia_colorida(img)->int:
     """
     Copia uma imagem e converte para colorida.\n
     @param img: cv2 image.\n
@@ -154,7 +154,7 @@ def copia_colorida(img:img)->int:
     except:
         return img.copy()
 
-def copia_escala_cinza(img:img)->int:
+def copia_escala_cinza(img)->int:
     """
     Copia uma imagem e converte para escala de cinza.\n
     @param img: cv2 image.\n
@@ -190,7 +190,7 @@ def carrega_img_def(dir_name:str)->list:
         imagens.append(cv2.imread(path + file_name, cv2.IMREAD_GRAYSCALE))
     return imagens
 
-def zoom_img(img:img, ponto:Ponto, precision:int = 50)->int:
+def zoom_img(img, ponto:Ponto, precision:int = 50)->int:
     """
         Da um zoom em determinado ponto da imagem.\n
         @param img: cv2 img\n
@@ -218,7 +218,7 @@ def zoom_img(img:img, ponto:Ponto, precision:int = 50)->int:
 
     return zoom
 
-def show_img(img:img, name:str='image', delay:int = 0, height:int=640, width:int=1024)->None:
+def show_img(img, name:str='image', delay:int = 0, height:int=640, width:int=1024)->None:
     """
         Exibe uma imagem em tela.\n
         @param img: cv2 img\n
@@ -239,7 +239,7 @@ def show_img(img:img, name:str='image', delay:int = 0, height:int=640, width:int
     if delay == 0: print("============================\n\tpress enter\n============================\n")
     cv2.waitKey(delay)
 
-def contorna_pontos(img:img, pontos:list, distancia:int = 2, expessura:int = 2, color:int=RED)->int:
+def contorna_pontos(img, pontos:list, distancia:int = 2, expessura:int = 2, color:int=RED)->int:
     """
         Contorna pontos na imagem.\n
         @param img: cv2 image\n
@@ -280,7 +280,7 @@ def contorna_pontos(img:img, pontos:list, distancia:int = 2, expessura:int = 2, 
 
     return color
 
-def linha_vertical(img:img, ponto:Ponto, show_progress:bool = False, delay:int = 0, color:list=GREEN)->int:
+def linha_vertical(img, ponto:Ponto, show_progress:bool = False, delay:int = 0, color:list=GREEN)->int:
     """
         Cria uma linha vertical na imagem.\n
         @param img:\n
@@ -306,7 +306,7 @@ def linha_vertical(img:img, ponto:Ponto, show_progress:bool = False, delay:int =
 
     return img_color
 
-def linha_horizontal(img:img, ponto:Ponto, show_progress:bool = False, delay:int = 0, color:list=YELLOW)->int:
+def linha_horizontal(img, ponto:Ponto, show_progress:bool = False, delay:int = 0, color:list=YELLOW)->int:
     """
         Cria uma linha horizontal na imagem.\n
         @param img:\n
@@ -333,7 +333,7 @@ def linha_horizontal(img:img, ponto:Ponto, show_progress:bool = False, delay:int
 
     return img_color
 
-def get_pixel_mais_acima(img:img)->Ponto:
+def get_pixel_mais_acima(img)->Ponto:
     """
         Enconta o pixel valido mais alto da imagem.\n
         @param img: cv2 img\n
@@ -346,7 +346,7 @@ def get_pixel_mais_acima(img:img)->Ponto:
         for x in range(width):
             if img[y][x] != 255: return Ponto(x, y)
 
-def get_pixel_mais_abaixo(img:img)->Ponto:
+def get_pixel_mais_abaixo(img)->Ponto:
     """
         Enconta o pixel valido mais baixo da imagem.\n
         @param img: cv2 img\n
@@ -359,7 +359,7 @@ def get_pixel_mais_abaixo(img:img)->Ponto:
         for x in range(width):
             if img[y][x] != 255: return Ponto(x, y)
 
-def get_pixel_mais_a_esquerda(img:img)->Ponto:
+def get_pixel_mais_a_esquerda(img)->Ponto:
     """
         Enconta o pixel valido mais a esquerda da imagem.\n
         @param img: cv2 img\n
@@ -372,7 +372,7 @@ def get_pixel_mais_a_esquerda(img:img)->Ponto:
         for y in range(height):
             if img[y][x] != 255: return Ponto(x, y)
 
-def get_pixel_mais_a_direita(img:img)->Ponto:
+def get_pixel_mais_a_direita(img)->Ponto:
     """
         Enconta o pixel valido mais a direita da imagem.\n
         @param img: cv2 img\n
@@ -385,7 +385,7 @@ def get_pixel_mais_a_direita(img:img)->Ponto:
         for y in range(height):
             if img[y][x] != 255: return Ponto(x, y)
 
-def remove_bordas(img:img, show_progress:bool = False, delay:int = 0)->int:
+def remove_bordas(img, show_progress:bool = False, delay:int = 0)->int:
     """
         Remove os espacos em branco ao redor da imagem.\n
         @param img: cv2 img\n
@@ -455,12 +455,12 @@ def remove_bordas(img:img, show_progress:bool = False, delay:int = 0)->int:
         print("ERROR AJUSTA IMAGEM CONVERTER PARA GRAY")
         return copy
     
-def satura(img:img, show_progress:bool = False, delay:int = 0)->int:
+def satura(img, show_progress:bool = False, delay:int = 0)->int:
     """
         Ajusta as cores da imagem para especificos tons de preto cinza e branco
         tornando-os padroes. \n
         (0, 100, 150, 255).\n
-        @param img:img\n
+        @param img\n
             \tImagem a ser saturada.\n
         @param show_progress:bool\n
             \tSe verdadeiro mostra o processo de saturacao da imagem.\n
@@ -517,10 +517,10 @@ def satura(img:img, show_progress:bool = False, delay:int = 0)->int:
 
     return img
                         
-def verifica_relevancia_do_pixel(img:img, ponto:Ponto, show_progress:bool=False, delay:int=1)->bool:
+def verifica_relevancia_do_pixel(img, ponto:Ponto, show_progress:bool=False, delay:int=1)->bool:
     """
         Verifica se o pixel e relevante para a composicao da imagem.\n
-        @param img:img\n
+        @param img\n
             \tImagem onde o pixem se encontra\n
         @param pixel:Ponto\n
             \tCoordenada do pixel.\n
@@ -627,7 +627,7 @@ def verifica_relevancia_do_pixel(img:img, ponto:Ponto, show_progress:bool=False,
     return False
     pass
 
-def remove_pixel_isolado(img:img, show_progress:bool = False, delay:int = 0)->None:
+def remove_pixel_isolado(img, show_progress:bool = False, delay:int = 0)->None:
     """
         Remove pixels de sujeira da imagem.\n
         @param img:cv2 img\n
@@ -702,7 +702,7 @@ def remove_pixel_isolado(img:img, show_progress:bool = False, delay:int = 0)->No
             except:
                 pass
                     
-def ajusta_angulo(img:img, show_progress:bool = False, delay:int = 0)->int:
+def ajusta_angulo(img, show_progress:bool = False, delay:int = 0)->int:
     
     """
         Rotaciona a imagem se ela estiver angulada para um dos lados.\n
@@ -814,7 +814,16 @@ def verifica_pixel_valido(img1:img, img2:img, py:int, px:int)->bool:
     return False
     pass
 
-def propaga(img1, img2, result, y, x):
+def propaga(img1:img, img2:img, result:img, y:int, x:int):
+    """
+        Recursivamente verifica a extensao do erro encontrado para verificar sua relevancia.
+        @param img1: cv2 img
+
+        @param img2: cv2 img
+        @param result: cv2 img
+        @param y: int
+        @param x: int
+    """
 
     h, w = img1.shape[:2]
 
