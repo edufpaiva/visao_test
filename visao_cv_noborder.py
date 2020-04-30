@@ -812,7 +812,17 @@ def ajusta_angulo(img:img, show_progress:bool = False, delay:int = 0)->int:
 
     return copy
 
-def verifica_pixel_valido(img1, img2, py, px):
+def verifica_pixel_valido(img1:img, img2:img, py:int, px:int)->bool:
+    """
+        Verifica se há algum pixel semelhante proximo ao pixel selecionado.\n
+        @param img1: cv2 img\n
+            \tImagem de base para comparacao.\n
+        @param img2: cv2 img\n
+            \tImagem para verificar se os pixels semelhantes.\n
+        @param py: int\n
+            \tponto y de coordenada do pixel.\n
+        @param px: int\n
+    """        
     h, w = img1.shape[:2]
 
     for y in range(py-1, py+2):
