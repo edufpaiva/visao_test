@@ -834,7 +834,7 @@ def verifica_pixel_valido(img1:img, img2:img, py:int, px:int)->bool:
     return False
     pass
 
-def compara_img(img1, img2, show_progress:bool, delay:int)->dict:
+def compara_img(img1, img2, show_progress:bool, delay:int)->int:
     """
         Compara duas imagens para gerar uma mascara de resultado.\n
         @param img1: cv2 img\n
