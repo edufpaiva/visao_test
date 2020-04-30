@@ -877,7 +877,19 @@ def compara_img(img1, img2, show_progress:bool, delay:int)->int:
     cv2.imwrite("Result2.png", result)
     return result
 
-def ajusta_imagem(img, show_progress = False, delay = 0):
+def ajusta_imagem(img, show_progress:bool = False, delay:int = 0)->int:
+    """
+        Ajusta imagem para verificacao de erros.\n
+        (satura, limpa, angula, remove bordas)\n
+        @param img: cv2 img\n
+            \tImagem para ser ajustada.\n
+        @param show_progress:bool\n
+            \tSe verdadeiro mostra o o processo de ajuste da imagem.\n
+        @param delay:int\n
+            \tTempo em que cada imagem sera exibida na tela. \n
+            \tEm milissegundos.\n
+    """
+    
     img = satura_img(img, show_progress, delay)
     # remove_pixel_isolado(img, show_progress, delay)
     # img = remove_bordas(img, show_progress, delay)
