@@ -627,19 +627,20 @@ def verifica_relevancia_do_pixel(img:img, ponto:Ponto, show_progress:bool=False,
     return False
     pass
 
-def remove_pixel_isolado(img, show_progress = False, delay = 0):
-    n_img = img.copy()
+def remove_pixel_isolado(img:img, show_progress:bool = False, delay:int = 0)->None:
+    """
+        Remove pixels de sujeira da imagem.\n
+        @param img:cv2 img\n
+            \tA imagem a ser limpa\n
+        @apram show_progress:bool\n
+            \tSe verdadeiro exibe o processo.\n
+        @param delay:int\n
+            \tTempo em que cada imagem e exibida na tela\n
+    """
     h, w = img.shape[:2]
 
     delay_erro = delay
     show_line = False
-
-    # for y in range(h):
-    #     if show_progress:
-    #         if y % int(h/10) == 0: 
-    #             linha_horizontal(n_img, Ponto(0, y), show_progress, delay)
-    #     for x in range(w):
-    #         if n_img[y][x] < 255: n_img[y][x] = 0
 
     if show_progress:
         root = tk.Tk()
@@ -660,7 +661,7 @@ def remove_pixel_isolado(img, show_progress = False, delay = 0):
             else:
                 delay_erro = 1
             root.destroy()
-        else: 
+        else:
             show_progress = False
             show_line = True
             root.destroy()
