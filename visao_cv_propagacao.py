@@ -524,7 +524,7 @@ def verifica_relevancia_do_pixel(img:img, ponto:Ponto, show_progress:bool=False,
             \tImagem onde o pixem se encontra\n
         @param pixel:Ponto\n
             \tCoordenada do pixel.\n
-        @apram show_progress:bool\n
+        @param show_progress:bool\n
             \tSe verdadeiro exibe o pixel.\n
         @param delay:int\n
             \tTempo em que cada imagem e exibida na tela\n
@@ -632,7 +632,7 @@ def remove_pixel_isolado(img:img, show_progress:bool = False, delay:int = 0)->No
         Remove pixels de sujeira da imagem.\n
         @param img:cv2 img\n
             \tA imagem a ser limpa\n
-        @apram show_progress:bool\n
+        @param show_progress:bool\n
             \tSe verdadeiro exibe o processo.\n
         @param delay:int\n
             \tTempo em que cada imagem e exibida na tela\n
@@ -702,81 +702,94 @@ def remove_pixel_isolado(img:img, show_progress:bool = False, delay:int = 0)->No
             except:
                 pass
                     
-def ajusta_angulo(img, show_progress = False, delay = 0):
+def ajusta_angulo(img:img, show_progress:bool = False, delay:int = 0)->int:
+    
+    """
+        Rotaciona a imagem se ela estiver angulada para um dos lados.\n
+        @param img: cv2 img\n
+            \tImagem a ser angulada\n
+        @param show_progress:bool\n
+            \tSe verdadeiro exibe o processo.\n
+        @param delay:int\n
+            \tTempo em que cada imagem e exibida na tela\n
+    """
+
     h, w = img.shape[:2]
-    pixel_branco = False
+    
+    pontos = []
+
+    ponto_mais_alto = get_pixel_mais_acima(img)
+    
+    if w < 300:
+        for x in range(ponto_mais_alto.x, w, 50):
+            for y in range(50):
+                if img[y][x] != 255:
+                    pontos.append(Ponto(x,y))
+                    break
+    else:
+        for x in range(0, w, int(w/30)):
+            for y in range(50):
+                if img[y][x] != 255:
+                    pontos.append(Ponto(x,y))
+                    break
+    
+    contorna_pontos(img, pontos)
+    angulos = []
+    
+    for i in range( len(pontos)):
+        angulo = -get_angulo(ponto_mais_alto, pontos[i])
+        # print(angulo)
+        if angulo > 3 or angulo < -3: continue
+        angulos.append(angulo)
+    
+    copy = get_empty_img(h+100, w+100, True)
+    copy[:][:] = 255
+    
     for y in range(h):
-        if img[y][0] == 255:
-            pixel_branco = True
-            break
-
-    if pixel_branco:
-        pontos = []
-
-        ponto_mais_alto = get_pixel_mais_acima(img)
-        if w < 300:
-
-            for x in range(ponto_mais_alto.x, w, 50):
-                for y in range(50):
-                    if img[y][x] != 255:
-                        pontos.append(Ponto(x,y))
-                        break
-        else:
-            for x in range(0, w, int(w/30)):
-                for y in range(50):
-                    if img[y][x] != 255:
-                        pontos.append(Ponto(x,y))
-                        break
-        mostra_pontos(img, pontos, 0)
-        angulos = []
-        for i in range( len(pontos)):
-            angulo = -get_angulo(ponto_mais_alto, pontos[i])
-            # print(angulo)
-            if angulo > 3 or angulo < -3: continue
-            angulos.append(angulo)
-        
-        copy = get_empty_img(h+100, w+100, True)
-        copy[:][:] = 255
-        for y in range(h):
-            for x in range(w):
-                copy[y+50][x+50] = img[y][x]
-
-        angulo = get_moda(angulos)
-        print(angulo)
-        if angulo > 2 and angulo < 3 or angulo > -3 and angulo < -2:
-            angulo = angulo/2
-        else:
-            return img
-        copy = rotate_bound(copy, angulo)
-        show_img(copy, "progress")
-
-        h, w = copy.shape[:2]
-
-        for y in range(h):
-            for x in range(w):
-                if copy[y][x] == 255: break
-                else: copy[y][x] = 255
         for x in range(w):
-            for y in range(h):
-                if copy[y][x] == 255: break
-                else: copy[y][x] = 255
-        for y in range(h-1, 0, -1):
-            for x in range(w-1, 0, -1):
-                if copy[y][x] == 255: break
-                else: copy[y][x] = 255
+            copy[y+50][x+50] = img[y][x]
+
+    angulo = get_moda(angulos)
+    # print(angulo)
+    
+    if angulo > 2 and angulo < 3 or angulo > -3 and angulo < -2:
+        angulo = angulo/2
+    else:
+        return img
+    
+    copy = rotate_bound(copy, angulo)
+    show_img(copy, "progress")
+
+    h, w = copy.shape[:2]
+
+    for y in range(h):
+        for x in range(w):
+            if copy[y][x] == 255: break
+            else: copy[y][x] = 255
+    
+    for x in range(w):
+        for y in range(h):
+            if copy[y][x] == 255: break
+            else: copy[y][x] = 255
+    
+    for y in range(h-1, 0, -1):
         for x in range(w-1, 0, -1):
-            for y in range(h-1, 0, -1):
-                if copy[y][x] == 255: break
-                else: copy[y][x] = 255
+            if copy[y][x] == 255: break
+            else: copy[y][x] = 255
+    
+    for x in range(w-1, 0, -1):
+        for y in range(h-1, 0, -1):
+            if copy[y][x] == 255: break
+            else: copy[y][x] = 255
 
-        show_img(copy, "progress")
+    show_img(copy, "progress")
 
-        copy = remove_bordas(copy, show_progress, delay)
+    copy = remove_bordas(copy, show_progress, delay)
 
-        show_img(copy,"progress")
+    show_img(copy,"progress")
 
-        return copy
-    else: return img
+    return copy
+    
 
 def verifica_pixel_valido(img1, img2, py, px):
     h, w = img1.shape[:2]
