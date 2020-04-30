@@ -834,7 +834,18 @@ def verifica_pixel_valido(img1:img, img2:img, py:int, px:int)->bool:
     return False
     pass
 
-def compara_img(img1, img2, show_progress, delay):
+def compara_img(img1, img2, show_progress:bool, delay:int)->dict:
+    """
+        Compara duas imagens para gerar uma mascara de resultado.\n
+        @param img1: cv2 img\n
+            \tImagem base para comparacao.\n
+        @param img2: cv2 img\n
+            \tImagem a ser comparada com a base para achar possiveis falhas.\n
+        @param show_progress: bool\n
+            \tSe verdadeiro mostra o prcesso de verificacao.\n
+        @param delay: int\n
+            \tTempo que cada imagem aparecera na tela, em milissegundos.\n
+    """  
     h,  w  = img1.shape[:2]
     img2 = cv2.resize(img2, (w, h), interpolation= cv2.INTER_AREA)
 
@@ -862,7 +873,7 @@ def compara_img(img1, img2, show_progress, delay):
 
     if PRINT_RESULT:print_result(result)
 
-    show_img(result,'progress')
+    if show_progress: show_img(result,'progress', delay)
     cv2.imwrite("Result2.png", result)
     return result
 
