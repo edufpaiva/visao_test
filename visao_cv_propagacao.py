@@ -57,7 +57,7 @@ class Ponto:
         """
         return("x: %i, y: %i" %(self.x, self.y))
 
-def print_result(img, name:str="Print", extension:str="png", path:str="Print/"):
+def print_result(img, name:str="Print", extension:str="png", path:str="Print/")->None:
     """
         Salva uma imagem.\n
         @param img: cv2 img\n
@@ -218,7 +218,7 @@ def zoom_img(img:img, ponto:Ponto, precision:int = 50)->int:
 
     return zoom
 
-def show_img(img:img, name:str='image', delay:int = 0, height:int=640, width:int=1024):
+def show_img(img:img, name:str='image', delay:int = 0, height:int=640, width:int=1024)->None:
     """
         Exibe uma imagem em tela.\n
         @param img: cv2 img\n
@@ -239,7 +239,7 @@ def show_img(img:img, name:str='image', delay:int = 0, height:int=640, width:int
     if delay == 0: print("============================\n\tpress enter\n============================\n")
     cv2.waitKey(delay)
 
-def contorna_pontos(img:img, pontos:list, distancia:int = 2, expessura:int = 2, color:int=RED):
+def contorna_pontos(img:img, pontos:list, distancia:int = 2, expessura:int = 2, color:int=RED)->int:
     """
         Contorna pontos na imagem.\n
         @param img: cv2 image\n
@@ -790,8 +790,9 @@ def ajusta_angulo(img:img, show_progress:bool = False, delay:int = 0)->int:
 
     return copy
     
+def verifica_pixel_valido(img1, img2, py, px)->bool:
 
-def verifica_pixel_valido(img1, img2, py, px):
+
     h, w = img1.shape[:2]
 
     for y in range(py-1, py+2):
