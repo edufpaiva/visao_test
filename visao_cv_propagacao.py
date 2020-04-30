@@ -814,7 +814,7 @@ def verifica_pixel_valido(img1, img2, py:int, px:int)->bool:
     return False
     pass
 
-def propaga(img1, img2, result, y:int, x:int):
+def propaga(img1, img2, result, y:int, x:int)->int:
     """
         Recursivamente verifica a extensao do erro encontrado para verificar sua relevancia.\n
         @param img1: cv2 img\n
@@ -851,7 +851,7 @@ def propaga(img1, img2, result, y:int, x:int):
     except:
         return 0
 
-def pinta_pixel_proximos(img, y:int, x:int, color:list = RED):
+def pinta_pixel_proximos(img, y:int, x:int, color:list = RED)->None:
     """
         Verifica se o pixel e um pixel de erro e muda sua cor, e recursivamente
         verifica os pixels proximos a ele.\n
@@ -874,7 +874,7 @@ def pinta_pixel_proximos(img, y:int, x:int, color:list = RED):
         if y - 1 > 0: cima      = pinta_pixel_proximos(img, y - 1, x, color)
         if y + 1 < h: baixo     = pinta_pixel_proximos(img, y + 1, x, color)
     
-def verifica_linha(img, y:int, x:int):
+def verifica_linha(img, y:int, x:int)->bool:
     """
         Verifica se o erro encontrado é uma linha de pixel unico, e provavelmente um erro equivocado.\n
         @param img: cv2 img\n
@@ -929,7 +929,18 @@ def verifica_linha(img, y:int, x:int):
 
     return False
 
-def compara_img(img1, img2, show_progress, delay):
+def compara_img(img1, img2, show_progress:bool, delay:int)->dict:
+    """
+        Compara duas imagens para gerar pontos de erro e uma mascara de resultado.\n
+        @param img1: cv2 img\n
+            \tImagem base para comparacao.\n
+        @param img2: cv2 img\n
+            \tImagem a ser comparada com a base para achar possiveis falhas.\n
+        @param show_progress: bool\n
+            \tSe verdadeiro mostra o prcesso de verificacao.\n
+        @param delay: int\n
+            \tTempo que cada imagem aparecera na tela, em milissegundos.\n
+    """        
     h,  w  = img1.shape[:2]
     img2 = cv2.resize(img2, (w, h), interpolation= cv2.INTER_AREA)
 
