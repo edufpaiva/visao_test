@@ -527,7 +527,7 @@ def verifica_relevancia_do_pixel(img:img, ponto:Ponto, show_progress:bool=False,
         @apram show_progress:bool\n
             \tSe verdadeiro exibe o pixel.\n
         @param delay:int\n
-            \tTempo em que cada imagem e exibida na telan\n
+            \tTempo em que cada imagem e exibida na tela\n
     """
     tam = 50
     height, width = img.shape[:2]

@@ -542,7 +542,6 @@ def satura_img(img:img, show_progress:bool = False, delay:int = 0)->int:
     return img
                         
 def verifica_relevancia_do_pixel(img:img, ponto:Ponto, show_progress:bool=False, delay:int=1)->bool:
-    #   Preciso achar uma forma mais inteligente de fazer isso 
     """
         Verifica se o pixel e relevante para a composicao da imagem.\n
         @param img:img\n
@@ -552,18 +551,12 @@ def verifica_relevancia_do_pixel(img:img, ponto:Ponto, show_progress:bool=False,
         @apram show_progress:bool\n
             \tSe verdadeiro exibe o pixel.\n
         @param delay:int\n
-    """        
+            \tTempo em que cada imagem e exibida na tela\n
+    """
     tam = 50
     height, width = img.shape[:2]
     if show_progress:
-        zoom = get_empty_img(img, tam, tam)
-        for y in range(tam):
-            for x in range(tam):
-                py = y + ponto.y - int(tam/2)
-                px = x + ponto.x - int(tam/2)
-                if py >= height or py < 0: continue
-                if px >= width or px < 0: continue
-                zoom[y][x] = img[py][px]
+        zoom = zoom_img(img, ponto, 50)
 
         show_img(contorna_pontos(img,  [ponto], delay)  , 'progress', delay)
         show_img(contorna_pontos(zoom, [Ponto(int(tam/2), int(tam/2))], delay), 'zoom', delay, tam*6, tam*6)
