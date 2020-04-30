@@ -200,7 +200,7 @@ def zoom_img(img, ponto:Ponto, precision:int = 50)->int:
         @param precision: int\n
             \tA quantidade de pixels na imagem gerada\n
     """
-    zoom = get_empty_img(img, precision*2, precision*2)
+    zoom = get_empty_img(precision*2, precision*2)
     h, w = img.shape[:2]
     
     py, px = ponto.y, ponto.x
@@ -816,13 +816,17 @@ def verifica_pixel_valido(img1, img2, py:int, px:int)->bool:
 
 def propaga(img1, img2, result, y:int, x:int):
     """
-        Recursivamente verifica a extensao do erro encontrado para verificar sua relevancia.
-        @param img1: cv2 img
-
-        @param img2: cv2 img
-        @param result: cv2 img
-        @param y: int
-        @param x: int
+        Recursivamente verifica a extensao do erro encontrado para verificar sua relevancia.\n
+        @param img1: cv2 img\n
+            \tImagem base para comparacao.\n
+        @param img2: cv2 img\n
+            \tImagem para verificacao.\n
+        @param result: cv2 img\n
+            \tMascara resultante da comparacao.\n
+        @param y: int\n
+            \tcoordenada y do ponto a ser verificado.\n
+        @param x: int\n
+            \tcoordenada x do ponto a ser verificado.\n
     """
 
     h, w = img1.shape[:2]
@@ -908,7 +912,7 @@ def compara_img(img1, img2, show_progress, delay):
 
     pontos = []
     # result = copia_colorida(img1)
-    result = get_empty_img(img1)
+    result = get_empty_img(h, w)
 
     for y in range(h):
         if y % int(h/20) == 0 and show_progress: 
