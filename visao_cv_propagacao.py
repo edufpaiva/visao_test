@@ -864,7 +864,7 @@ def pinta_pixel_proximos(img, y:int, x:int, color:list = RED):
         @param color: list\n
             \tCor que o pixel devera receber apos verificacao.\n
     """
-    
+
     h, w = img.shape[:2]
 
     if verif_cor_pixel(img[y][x], BLUE): 
@@ -874,7 +874,17 @@ def pinta_pixel_proximos(img, y:int, x:int, color:list = RED):
         if y - 1 > 0: cima      = pinta_pixel_proximos(img, y - 1, x, color)
         if y + 1 < h: baixo     = pinta_pixel_proximos(img, y + 1, x, color)
     
-def verifica_linha(img, y, x):
+def verifica_linha(img, y:int, x:int):
+    """
+        Verifica se o erro encontrado é uma linha de pixel unico, e provavelmente um erro equivocado.\n
+        @param img: cv2 img\n
+            \tImagem de mascara para verificacao das linhas.\n
+        @param y: int\n
+            \tCorrdenada y do ponto inicial da linha.\n
+        @param x: int\n
+            \tCorrdenada x do ponto inicial da linha.\n
+    """
+
     hor = 0
     ver = 0
     
