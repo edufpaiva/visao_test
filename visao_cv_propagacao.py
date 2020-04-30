@@ -851,15 +851,28 @@ def propaga(img1, img2, result, y:int, x:int):
     except:
         return 0
 
-def pinta_pixel_proximos(img, y, x, color):
+def pinta_pixel_proximos(img, y:int, x:int, color:list = RED):
+    """
+        Verifica se o pixel e um pixel de erro e muda sua cor, e recursivamente
+        verifica os pixels proximos a ele.\n
+        @param img: cv2 img\n
+            \tImagem mascara base para verificacao dos pixels\n
+        @param y: int\n
+            \tCoordenada y do pixel a ser verificado.\n
+        @param x: int\n
+            \tcoordenada x do pixel a ser verificado\n
+        @param color: list\n
+            \tCor que o pixel devera receber apos verificacao.\n
+    """
+    
     h, w = img.shape[:2]
 
     if verif_cor_pixel(img[y][x], BLUE): 
         img[y][x] = color
-        if x + 1 < w: direita   = pinta_pixel_proximos(img, y, x + 1, RED)
-        if x - 1 > 0: esquerda  = pinta_pixel_proximos(img, y, x - 1, RED)
-        if y - 1 > 0: cima      = pinta_pixel_proximos(img, y - 1, x, RED)
-        if y + 1 < h: baixo     = pinta_pixel_proximos(img, y + 1, x, RED)
+        if x + 1 < w: direita   = pinta_pixel_proximos(img, y, x + 1, color)
+        if x - 1 > 0: esquerda  = pinta_pixel_proximos(img, y, x - 1, color)
+        if y - 1 > 0: cima      = pinta_pixel_proximos(img, y - 1, x, color)
+        if y + 1 < h: baixo     = pinta_pixel_proximos(img, y + 1, x, color)
     
 def verifica_linha(img, y, x):
     hor = 0
