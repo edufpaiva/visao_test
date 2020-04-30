@@ -915,7 +915,18 @@ def verif_cor_pixel(pixel:list, color:list)->bool:
         if pixel[i] != color[i]: return False
     return True
 
-def checa_validadae_erro(img, py, px):
+def checa_validadae_erro(img, py:int, px:int)->bool:
+    """
+        Verifica se o tamanho do erro é grande o suficiente para ser um erro valido, 
+        como um quadrado 2x2.\n
+        @param img: cv2 img\n
+            \tA imagem para ser validado o erro.\n
+        @param py: int\n
+            \tCoodernada y do ponto inicial do erro.\n
+        @param px: int\n
+            \tCoodernada x do ponto inicial do erro.\n
+    """
+    
     #   pixel de erro 2x2
     tam_pixel_erro = 2
     
