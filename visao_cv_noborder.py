@@ -926,7 +926,7 @@ def checa_validadae_erro(img, py:int, px:int)->bool:
         @param px: int\n
             \tCoodernada x do ponto inicial do erro.\n
     """
-    
+
     #   pixel de erro 2x2
     tam_pixel_erro = 2
     
@@ -935,9 +935,19 @@ def checa_validadae_erro(img, py:int, px:int)->bool:
             if not verif_cor_pixel(img[y][x], BLUE): return False
     return True
 
-def limpa_falso_positivo(img, show_progress, delay):
+def limpa_falso_positivo(img, show_progress:bool, delay:int)->list:
     """
-    @return a list of points that possibly have errors
+    Verifica os erros encontrados na imagem e exclui aqueles que possivelmente nao são erros validos\n
+
+    @param img: cv2 img\n
+        \tA imagem de mascara para verificar os erros encontrados.\n
+    @param  show_progress: bool\n
+        \tSe verdadeiro exibe o processo de limpeza da imagem\n
+    @param  delay: int\n
+        \tO tempo em que cada imagem sera exibida na tela.\n
+        \tEm milissegundos.\n
+
+    @return a list of points that possibly have errors\n
 
     """
     
