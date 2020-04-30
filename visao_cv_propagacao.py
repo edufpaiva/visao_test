@@ -790,7 +790,7 @@ def ajusta_angulo(img, show_progress:bool = False, delay:int = 0)->int:
 
     return copy
     
-def verifica_pixel_valido(img1:img, img2:img, py:int, px:int)->bool:
+def verifica_pixel_valido(img1, img2, py:int, px:int)->bool:
     """
         Verifica se há algum pixel semelhante proximo ao pixel selecionado.\n
         @param img1: cv2 img\n
@@ -814,7 +814,7 @@ def verifica_pixel_valido(img1:img, img2:img, py:int, px:int)->bool:
     return False
     pass
 
-def propaga(img1:img, img2:img, result:img, y:int, x:int):
+def propaga(img1, img2, result, y:int, x:int):
     """
         Recursivamente verifica a extensao do erro encontrado para verificar sua relevancia.
         @param img1: cv2 img
