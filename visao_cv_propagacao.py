@@ -1102,7 +1102,16 @@ def remove_pontos_proximos(pontos:list, delete_range:int=40)->list:
     # print(len(result))
     return pontos_selecionados
 
-def pergunta_yes_no(titulo, texto):
+def pergunta_yes_no(titulo:str, texto:str)->None:
+    """
+        Utiliza o Tkinter para exibir uma mensagem de confimação na tela.\n
+        @param titulo: str\n
+            \tTitulo da mensagem\n
+        @param texto: str\n
+           \t Conteudo da mensagem\n
+    """
+
+
     msg = tk.messagebox.askquestion(titulo, texto, icon="warning")
     if msg == 'yes': 
         return True
