@@ -1024,7 +1024,7 @@ def junta_tres_imagens(img1, img2, img3)->int:
         img1, img2, img3: cv2 img\n
             \tImagem para uniao.\n
     """
-    
+
     h1, w1 = img1.shape[:2]
     h2, w2 = img2.shape[:2]
     h3, w3 = img3.shape[:2]
@@ -1049,7 +1049,6 @@ def junta_tres_imagens(img1, img2, img3)->int:
             result[y][x + w1 + w2] = img3[y][x]
             
     return result
-
 
 def start(index_base = 0, index_def = 0):
 
