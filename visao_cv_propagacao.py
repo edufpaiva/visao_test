@@ -1108,9 +1108,8 @@ def pergunta_yes_no(titulo:str, texto:str)->None:
         @param titulo: str\n
             \tTitulo da mensagem\n
         @param texto: str\n
-           \t Conteudo da mensagem\n
+            \t Conteudo da mensagem\n
     """
-
 
     msg = tk.messagebox.askquestion(titulo, texto, icon="warning")
     if msg == 'yes': 
@@ -1121,8 +1120,13 @@ def pergunta_yes_no(titulo:str, texto:str)->None:
     
     # root.mainloop()
 
+def junta_tres_imagens(img1, img2, img3)->int:
+    """
+        Une 3 imagens de mesmo tamanho em uma unica imagem.\n
+        img1, img2, img3: cv2 img\n
+            \tImagem para uniao.\n
+    """
 
-def junta_tres_imagens(img1, img2, img3):
     h1, w1 = img1.shape[:2]
     h2, w2 = img2.shape[:2]
     h3, w3 = img3.shape[:2]
