@@ -974,11 +974,11 @@ def limpa_falso_positivo(img, show_progress:bool, delay:int)->list:
 def remove_pontos_proximos(pontos:list, delete_range:int=40)->list:
     """
         Remove pontos selecionados proximos um ao outro dentro de um range, 
-        para evitar que o mesmo trecho da imagem seja exibido mais de uma vez.
-        @param pontos: list
-            Lista de pontos selecionados para verificação.
-        @paaram delete_range: int
-            Range que sera removido os pontos que estiverem dentro
+        para evitar que o mesmo trecho da imagem seja exibido mais de uma vez.\n
+        @param pontos: list\n
+            \tLista de pontos selecionados para verificação.\n
+        @paaram delete_range: int\n
+            \tRange que sera removido os pontos que estiverem dentro\n
     """
     # print(len(pontos))
     if len(pontos) == 0: return pontos
