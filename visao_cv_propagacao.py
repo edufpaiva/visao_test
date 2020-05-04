@@ -1051,7 +1051,8 @@ def limpa_falso_positivo(img, show_progress:bool, delay:int)->list:
     @return a list of points that possibly have errors\n
 
     """
-    #!  MUDAR METODO PARA ACHAR OS PONTOS DE ERRO DIRETAMENTE 
+    #!  MUDAR METODO PARA ACHAR OS PONTOS DE ERRO DIRETAMENTE  
+
     pontos = []
     h, w = img.shape[:2]
     for y in range(h):
@@ -1072,26 +1073,34 @@ def limpa_falso_positivo(img, show_progress:bool, delay:int)->list:
     cv2.imwrite("Result_Erros.png", img)
     return pontos
 
-def remove_pontos_proximos( pontos, delete_range=40):
+def remove_pontos_proximos(pontos:list, delete_range:int=40)->list:
+    """
+        Remove pontos selecionados proximos um ao outro dentro de um range, 
+        para evitar que o mesmo trecho da imagem seja exibido mais de uma vez.
+        @param pontos: list
+            Lista de pontos selecionados para verificação.
+        @paaram delete_range: int
+            Range que sera removido os pontos que estiverem dentro
+    """
     # print(len(pontos))
     if len(pontos) == 0: return pontos
-    result = []
+    pontos_selecionados = []
     
     
     pontos.reverse()
-    result.append(pontos.pop())
+    pontos_selecionados.append(pontos.pop())
 
     while len(pontos) > 0:
         ponto = pontos.pop()
         
-        y = result[-1].y
-        x = result[-1].x
+        y = pontos_selecionados[-1].y
+        x = pontos_selecionados[-1].x
         
         if ponto.x > x and ponto.x < x + delete_range or ponto.y > y and ponto.y < y + delete_range: continue
 
-        result.append(ponto)
+        pontos_selecionados.append(ponto)
     # print(len(result))
-    return result
+    return pontos_selecionados
 
 def pergunta_yes_no(titulo, texto):
     msg = tk.messagebox.askquestion(titulo, texto, icon="warning")
